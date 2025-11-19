@@ -4,7 +4,7 @@ use pastey::paste;
 macro_rules! impl_tuple {
     ($($t:expr),*) => {
         paste! {
-            impl<$([<T$t>]: TriggerBinding),*> TriggerBinding for ($([<T$t>]),*) {
+            impl<$([<T$t>]: TriggerBinding + Clone),*> TriggerBinding for ($([<T$t>]),*) {
                 fn pressed(&self, inputs: &Inputs) -> bool {
                     false $(|| self.$t.pressed(inputs))*
                 }

@@ -1,15 +1,24 @@
 use crate::inputs::Inputs;
 use bevy::ecs::resource::Resource;
+use dyn_clone::DynClone;
 use std::marker::PhantomData;
 
 mod bindings;
 mod combinators;
 
-pub trait TriggerBinding: Send + Sync + 'static {
+pub trait TriggerBinding: DynClone + Send + Sync + 'static {
     fn pressed(&self, inputs: &Inputs) -> bool;
     fn just_pressed(&self, inputs: &Inputs) -> bool;
     fn just_released(&self, inputs: &Inputs) -> bool;
+
+    /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding into its components and
+    /// return a vec of boxed bindings. Otherwise, returns None.
+    fn split(&self) -> Option<Vec<Box<dyn TriggerBinding>>> {
+        None
+    }
 }
+
+dyn_clone::clone_trait_object!(TriggerBinding);
 
 #[derive(Resource)]
 pub struct Trigger<T> {
@@ -41,5 +50,13 @@ impl<T> Trigger<T> {
 
     pub fn just_released(&self) -> bool {
         self.just_released
+    }
+
+    pub fn binding(&self) -> &dyn TriggerBinding {
+        self.binding.as_ref()
+    }
+
+    pub fn set_binding(&mut self, binding: impl TriggerBinding) {
+        self.binding = Box::new(binding);
     }
 }

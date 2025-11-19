@@ -5,6 +5,12 @@ use bevy::input::{
     mouse::{MouseButton, MouseScrollUnit},
 };
 
+impl AxisBinding for () {
+    fn value(&self, _inputs: &Inputs) -> Option<f32> {
+        None
+    }
+}
+
 impl AxisBinding for KeyCode {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         inputs.keycodes.pressed(*self).then_some(1.0)
@@ -23,6 +29,7 @@ impl AxisBinding for GamepadButton {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct MouseX;
 
 impl AxisBinding for MouseX {
@@ -36,6 +43,7 @@ impl AxisBinding for MouseX {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct MouseY;
 
 impl AxisBinding for MouseY {
@@ -49,6 +57,7 @@ impl AxisBinding for MouseY {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct MouseWheel {
     pub px_per_line: f32,
 }
@@ -86,5 +95,11 @@ impl AxisBinding for GamepadAxis {
             }
         }
         None
+    }
+}
+
+impl AxisBinding for Box<dyn AxisBinding> {
+    fn value(&self, inputs: &Inputs) -> Option<f32> {
+        self.as_ref().value(inputs)
     }
 }

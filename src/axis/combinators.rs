@@ -3,9 +3,10 @@ use pastey::paste;
 
 /// A pair of axis binding, where the first axis is used for the negative direction and the second axis is used for the
 /// positive direction.
+#[derive(Clone, Copy)]
 pub struct Pair<A1: AxisBinding, A2: AxisBinding>(pub A1, pub A2);
 
-impl<A1: AxisBinding, A2: AxisBinding> AxisBinding for Pair<A1, A2> {
+impl<A1: AxisBinding + Clone, A2: AxisBinding + Clone> AxisBinding for Pair<A1, A2> {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         let negative = self.0.value(inputs);
         let positive = self.1.value(inputs);
@@ -22,9 +23,10 @@ impl<A1: AxisBinding, A2: AxisBinding> AxisBinding for Pair<A1, A2> {
 }
 
 /// An axis binding that is only active when the given trigger binding is active.
+#[derive(Clone, Copy)]
 pub struct WithTriggerBinding<A: AxisBinding, T: TriggerBinding>(pub A, pub T);
 
-impl<A: AxisBinding, T: TriggerBinding> AxisBinding for WithTriggerBinding<A, T> {
+impl<A: AxisBinding + Clone, T: TriggerBinding + Clone> AxisBinding for WithTriggerBinding<A, T> {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         if !self.1.pressed(inputs) {
             return None;
@@ -34,12 +36,38 @@ impl<A: AxisBinding, T: TriggerBinding> AxisBinding for WithTriggerBinding<A, T>
     }
 }
 
+impl<A: AxisBinding + Clone> AxisBinding for Vec<A> {
+    fn value(&self, inputs: &Inputs) -> Option<f32> {
+        let all = self
+            .iter()
+            .filter_map(|binding| binding.value(inputs))
+            .collect::<Vec<_>>();
+        let sum = all.iter().sum::<f32>();
+        let count = all.len();
+
+        if count > 0 {
+            Some(sum / count as f32)
+        } else {
+            None
+        }
+    }
+
+    fn split(&self) -> Option<Vec<Box<dyn AxisBinding>>> {
+        Some(
+            self.iter()
+                .cloned()
+                .map(|b| Box::new(b) as Box<dyn AxisBinding>)
+                .collect(),
+        )
+    }
+}
+
 macro_rules! impl_tuple {
     ($($a:expr),*) => {
         paste! {
-            impl<$([<A$a>]: AxisBinding),*> AxisBinding for ($([<A$a>]),*) {
-                    fn value(&self, inputs: &Inputs) -> Option<f32> {
-                        let all = [$(self.$a.value(inputs)),*]
+            impl<$([<A$a>]: AxisBinding + Clone),*> AxisBinding for ($([<A$a>]),*) {
+                fn value(&self, inputs: &Inputs) -> Option<f32> {
+                    let all = [$(self.$a.value(inputs)),*]
                         .iter()
                         .filter_map(|v| *v)
                         .collect::<Vec<_>>();
@@ -51,6 +79,13 @@ macro_rules! impl_tuple {
                     } else {
                         None
                     }
+                }
+
+                fn split(&self) -> Option<Vec<Box<dyn AxisBinding>>>
+                where
+                    Self: Sized,
+                {
+                    Some(vec![$(Box::new(self.$a.clone())),*])
                 }
             }
         }
