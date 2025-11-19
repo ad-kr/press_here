@@ -1,8 +1,8 @@
 use crate::{axis::AxisBinding, inputs::Inputs, trigger::TriggerBinding};
 use pastey::paste;
 
-/// A pair of axis binding, where the first axis is used for the negative direction
-/// and the second axis is used for the positive direction.
+/// A pair of axis binding, where the first axis is used for the negative direction and the second axis is used for the
+/// positive direction.
 pub struct Pair<A1: AxisBinding, A2: AxisBinding>(pub A1, pub A2);
 
 impl<A1: AxisBinding, A2: AxisBinding> AxisBinding for Pair<A1, A2> {
