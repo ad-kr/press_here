@@ -1,0 +1,13 @@
+[package]
+name = "press_here"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bevy = "0.17.3"
+pastey = "0.2.0"
+
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
