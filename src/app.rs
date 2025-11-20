@@ -43,6 +43,7 @@ fn update_trigger<T: Send + Sync + 'static>(
         mouse_motion: mouse_motion.as_slice(),
         mouse_wheel: mouse_wheel.as_slice(),
         gamepads: gamepads.as_slice(),
+        time: &raw_inputs.time,
     };
 
     trigger.pressed = trigger.binding.pressed(&inputs);
@@ -64,6 +65,7 @@ fn update_axis<A: Send + Sync + 'static>(
         mouse_motion: mouse_motion.as_slice(),
         mouse_wheel: mouse_wheel.as_slice(),
         gamepads: gamepads.as_slice(),
+        time: &raw_inputs.time,
     };
 
     axis.value = axis.binding.value(&inputs).unwrap_or(0.0);
