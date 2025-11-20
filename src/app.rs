@@ -14,6 +14,15 @@ pub trait AppExt {
 }
 
 impl AppExt for App {
+    /// Adds a trigger to the app with the given binding. This will insert the trigger as a resource and set up the
+    /// necessary systems to update it.
+    ///
+    /// # Examples
+    /// ```ignore
+    /// App::new()
+    ///    .add_trigger::<MyTrigger>(KeyCode::Space)
+    ///    .add_trigger::<OtherTrigger>(GamepadButton::South);;
+    /// ```
     fn add_trigger<T: Send + Sync + 'static>(&mut self, binding: impl TriggerBinding) -> &mut Self {
         let trigger = Trigger::<T>::new(binding);
 
@@ -21,6 +30,17 @@ impl AppExt for App {
             .add_systems(PreUpdate, update_trigger::<T>)
     }
 
+    /// Adds an axis to the app with the given binding. This will insert the axis as a resource and set up the necessary
+    /// systems to update it.
+    ///
+    /// # Examples
+    /// ```ignore
+    /// App::new()
+    ///   .add_axis::<MyAxis>((
+    ///       Pair(KeyCode::KeyA, KeyCode::KeyD),
+    ///       GamepadAxis::LeftStickX.deadzone(0.1),
+    ///   ));
+    /// ```
     fn add_axis<A: Send + Sync + 'static>(&mut self, binding: impl AxisBinding) -> &mut Self {
         let axis = Axis::<A>::new(binding);
 
