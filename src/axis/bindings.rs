@@ -55,6 +55,7 @@ impl AxisBinding for GamepadButton {
     }
 }
 
+/// Binds the X-axis of mouse movement as an axis input.
 #[derive(Clone, Copy)]
 pub struct MouseX;
 
@@ -73,6 +74,7 @@ impl AxisBinding for MouseX {
     }
 }
 
+/// Binds the Y-axis of mouse movement as an axis input.
 #[derive(Clone, Copy)]
 pub struct MouseY;
 
@@ -91,6 +93,7 @@ impl AxisBinding for MouseY {
     }
 }
 
+/// Binds mouse wheel movement as an axis input.
 #[derive(Clone, Copy)]
 pub struct MouseWheel {
     pub px_per_line: f32,
