@@ -6,12 +6,22 @@ use bevy::input::{
 };
 
 impl AxisBinding for () {
-    fn value(&mut self, _inputs: &Inputs) -> Option<f32> {
+    fn value(&mut self, _: &Inputs) -> Option<f32> {
         None
     }
 
     fn clone_axis(&self) -> Box<dyn AxisBinding> {
         Box::new(())
+    }
+}
+
+impl AxisBinding for f32 {
+    fn value(&mut self, _: &Inputs) -> Option<f32> {
+        Some(*self)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
     }
 }
 
