@@ -8,6 +8,8 @@ use bevy::{
 };
 use std::{collections::BTreeMap, time::Duration};
 
+/// A helper struct for visualization of the axis values. It takes in an axis X and an optional axis Y which can be used
+/// to visualize axis behaviour using gizmos.
 #[derive(SystemParam)]
 pub struct AxisVisualizer<'w, 's, X: Send + Sync + 'static, Y: Send + Sync + 'static = ()> {
     gizmos: Gizmos<'w, 's>,
@@ -25,6 +27,7 @@ impl<X: Send + Sync + 'static, Y: Send + Sync + 'static> AxisVisualizer<'_, '_, 
         self.stored.insert(now, Vec2::new(x, y));
     }
 
+    /// Graphs the X axis values over time.
     pub fn graph_x(
         &mut self,
         timespan: Duration,
@@ -65,6 +68,7 @@ impl<X: Send + Sync + 'static, Y: Send + Sync + 'static> AxisVisualizer<'_, '_, 
         self
     }
 
+    /// Graphs the Y axis values over time.
     pub fn graph_y(
         &mut self,
         timespan: Duration,
@@ -105,6 +109,7 @@ impl<X: Send + Sync + 'static, Y: Send + Sync + 'static> AxisVisualizer<'_, '_, 
         self
     }
 
+    /// Draws a circle representing the current X and Y axis values.
     pub fn axis_circle(
         &mut self,
         position: Vec2,
