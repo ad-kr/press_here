@@ -7,7 +7,7 @@ use pastey::paste;
 pub struct Pair<A1: AxisBinding, A2: AxisBinding>(pub A1, pub A2);
 
 impl<A1: AxisBinding + Clone, A2: AxisBinding + Clone> AxisBinding for Pair<A1, A2> {
-    fn value(&self, inputs: &Inputs) -> Option<f32> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         let negative = self.0.value(inputs);
         let positive = self.1.value(inputs);
 
@@ -31,7 +31,7 @@ impl<A1: AxisBinding + Clone, A2: AxisBinding + Clone> AxisBinding for Pair<A1, 
 pub struct WithTriggerBinding<A: AxisBinding, T: TriggerBinding>(pub A, pub T);
 
 impl<A: AxisBinding + Clone, T: TriggerBinding + Clone> AxisBinding for WithTriggerBinding<A, T> {
-    fn value(&self, inputs: &Inputs) -> Option<f32> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         if !self.1.pressed(inputs) {
             return None;
         }
@@ -45,9 +45,9 @@ impl<A: AxisBinding + Clone, T: TriggerBinding + Clone> AxisBinding for WithTrig
 }
 
 impl<A: AxisBinding + Clone> AxisBinding for Vec<A> {
-    fn value(&self, inputs: &Inputs) -> Option<f32> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         let all = self
-            .iter()
+            .iter_mut()
             .filter_map(|binding| binding.value(inputs))
             .collect::<Vec<_>>();
         let sum = all.iter().sum::<f32>();
@@ -73,7 +73,7 @@ macro_rules! impl_tuple {
     ($($a:expr),*) => {
         paste! {
             impl<$([<A$a>]: AxisBinding + Clone),*> AxisBinding for ($([<A$a>]),*) {
-                fn value(&self, inputs: &Inputs) -> Option<f32> {
+                fn value(&mut self, inputs: &Inputs) -> Option<f32> {
                     let all = [$(self.$a.value(inputs)),*]
                         .iter()
                         .filter_map(|v| *v)

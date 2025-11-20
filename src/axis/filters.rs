@@ -5,7 +5,7 @@ use crate::{AxisBinding, inputs::Inputs};
 pub struct Deadzone<A: AxisBinding>(pub A, pub f32);
 
 impl<A: AxisBinding + Clone> AxisBinding for Deadzone<A> {
-    fn value(&self, inputs: &Inputs) -> Option<f32> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         let value = self.0.value(inputs)?;
 
         if value.abs() < self.1 {

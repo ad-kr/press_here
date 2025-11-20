@@ -7,9 +7,9 @@ mod bindings;
 mod combinators;
 
 pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
-    fn pressed(&self, inputs: &Inputs) -> bool;
-    fn just_pressed(&self, inputs: &Inputs) -> bool;
-    fn just_released(&self, inputs: &Inputs) -> bool;
+    fn pressed(&mut self, inputs: &Inputs) -> bool;
+    fn just_pressed(&mut self, inputs: &Inputs) -> bool;
+    fn just_released(&mut self, inputs: &Inputs) -> bool;
 
     /// Clones the inner value and returns it as a boxed trait object.
     fn clone_trigger(&self) -> Box<dyn TriggerBinding>;

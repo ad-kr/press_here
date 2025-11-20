@@ -10,7 +10,7 @@ pub mod filters;
 dyn_clone::clone_trait_object!(AxisBinding);
 
 pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
-    fn value(&self, inputs: &Inputs) -> Option<f32>;
+    fn value(&mut self, inputs: &Inputs) -> Option<f32>;
 
     /// Clones the inner value and returns it as a boxed trait object.
     fn clone_axis(&self) -> Box<dyn AxisBinding>;

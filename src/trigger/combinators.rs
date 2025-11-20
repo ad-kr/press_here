@@ -2,16 +2,16 @@ use crate::{inputs::Inputs, trigger::TriggerBinding};
 use pastey::paste;
 
 impl<T: TriggerBinding + Clone> TriggerBinding for Vec<T> {
-    fn pressed(&self, inputs: &Inputs) -> bool {
-        self.iter().any(|binding| binding.pressed(inputs))
+    fn pressed(&mut self, inputs: &Inputs) -> bool {
+        self.iter_mut().any(|binding| binding.pressed(inputs))
     }
 
-    fn just_pressed(&self, inputs: &Inputs) -> bool {
-        self.iter().any(|binding| binding.just_pressed(inputs))
+    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
+        self.iter_mut().any(|binding| binding.just_pressed(inputs))
     }
 
-    fn just_released(&self, inputs: &Inputs) -> bool {
-        self.iter().any(|binding| binding.just_released(inputs))
+    fn just_released(&mut self, inputs: &Inputs) -> bool {
+        self.iter_mut().any(|binding| binding.just_released(inputs))
     }
 
     fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
@@ -27,15 +27,15 @@ macro_rules! impl_tuple {
     ($($t:expr),*) => {
         paste! {
             impl<$([<T$t>]: TriggerBinding + Clone),*> TriggerBinding for ($([<T$t>]),*) {
-                fn pressed(&self, inputs: &Inputs) -> bool {
+                fn pressed(&mut self, inputs: &Inputs) -> bool {
                     false $(|| self.$t.pressed(inputs))*
                 }
 
-                fn just_pressed(&self, inputs: &Inputs) -> bool {
+                fn just_pressed(&mut self, inputs: &Inputs) -> bool {
                     false $(|| self.$t.just_pressed(inputs))*
                 }
 
-                fn just_released(&self, inputs: &Inputs) -> bool {
+                fn just_released(&mut self, inputs: &Inputs) -> bool {
                     false $(|| self.$t.just_released(inputs))*
                 }
 
