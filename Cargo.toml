@@ -27,3 +27,7 @@ path = "examples/smoothing.rs"
 [[example]]
 name = "visualization"
 path = "examples/visualization.rs"
+
+[[example]]
+name = "normalize"
+path = "examples/normalize.rs"

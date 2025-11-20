@@ -59,3 +59,30 @@ impl<A: AxisBinding + Clone> AxisBinding for Smooth<A> {
         Box::new(self.clone())
     }
 }
+
+/// A filter that normalizes the axis value so that the combined magnitude of the two axes is at most 1.0.
+///
+/// The first supplied axis is the one being normalized, and the second is the perpendicular axis used to calculate the
+/// magnitude.
+#[derive(Clone, Copy)]
+pub struct Normalize<A: AxisBinding, Perpendicular: AxisBinding>(pub A, pub Perpendicular);
+
+impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
+    for Normalize<A, Perpendicular>
+{
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let x = self.0.value(inputs).unwrap_or(0.0);
+        let y = self.1.value(inputs).unwrap_or(0.0);
+
+        let magnitude = (x * x + y * y).sqrt();
+        if magnitude > 1.0 {
+            Some(x / magnitude)
+        } else {
+            Some(x)
+        }
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}
