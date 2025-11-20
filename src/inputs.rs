@@ -12,6 +12,7 @@ use bevy::{
     time::{Real, Time},
 };
 
+/// A collection of input references for use in input bindings.
 pub struct Inputs<'a> {
     pub keycodes: &'a ButtonInput<KeyCode>,
     pub mouse_buttons: &'a ButtonInput<MouseButton>,
@@ -21,6 +22,7 @@ pub struct Inputs<'a> {
     pub time: &'a Time<Real>,
 }
 
+/// System parameter for accessing input resources.
 #[derive(SystemParam)]
 pub struct InputsSystemParam<'w, 's> {
     pub keycodes: Res<'w, ButtonInput<KeyCode>>,
