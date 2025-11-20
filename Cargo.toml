@@ -8,6 +8,9 @@ bevy = "0.17.3"
 dyn-clone = "1.0.20"
 pastey = "0.2.0"
 
+[features]
+default = ["visualizer"]
+visualizer = []
 
 [[example]]
 name = "basic"
@@ -20,3 +23,7 @@ path = "examples/change_binding.rs"
 [[example]]
 name = "smoothing"
 path = "examples/smoothing.rs"
+
+[[example]]
+name = "visualization"
+path = "examples/visualization.rs"
