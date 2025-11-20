@@ -19,6 +19,12 @@ impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> Axis
     }
 }
 
+/// A modifier that applies a custom transformation function to the axis value.
+///
+/// # Examples
+/// ```ignore
+/// let binding = Transformation(GamepadAxis::LeftStickY, |value| value.powi(3));
+/// ```
 #[derive(Clone, Copy)]
 pub struct Transformation<A: AxisBinding, F: Fn(f32) -> f32>(pub A, pub F);
 
