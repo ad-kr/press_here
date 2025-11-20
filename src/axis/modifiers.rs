@@ -1,4 +1,23 @@
 use crate::{AxisBinding, inputs::Inputs};
+use bevy::math::Curve;
+
+/// A modifier that applies a curve to the axis value. This is useful for creating non-linear input responses.
+#[derive(Clone, Copy)]
+pub struct WithCurve<A: AxisBinding, C: Curve<f32>>(pub A, pub C);
+
+impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> AxisBinding
+    for WithCurve<A, C>
+{
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let value = self.0.value(inputs)?;
+
+        self.1.sample(value)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}
 
 /// A modifier that multiplies two axis values together.
 #[derive(Clone, Copy)]
