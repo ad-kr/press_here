@@ -31,3 +31,7 @@ path = "examples/visualization.rs"
 [[example]]
 name = "normalize"
 path = "examples/normalize.rs"
+
+[[example]]
+name = "all_bindings"
+path = "examples/all_bindings.rs"
