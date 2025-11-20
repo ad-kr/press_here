@@ -105,16 +105,23 @@ impl<X: Send + Sync + 'static, Y: Send + Sync + 'static> AxisVisualizer<'_, '_, 
         self
     }
 
-    pub fn axis_circle(&mut self, scale: f32, radius: f32, color: impl Into<Color>) -> &mut Self {
+    pub fn axis_circle(
+        &mut self,
+        position: Vec2,
+        scale: f32,
+        radius: f32,
+        color: impl Into<Color>,
+    ) -> &mut Self {
         self.store_current();
 
         let Some((_, point)) = self.stored.iter().next_back() else {
             return self;
         };
-        let position = point * scale;
+        let point_position = point * scale + position;
 
-        self.gizmos.circle_2d(Vec2::ZERO, radius, Srgba::gray(0.7));
-        self.gizmos.circle_2d(position, 8.0, color);
+        self.gizmos
+            .circle_2d(point_position, radius, Srgba::gray(0.7));
+        self.gizmos.circle_2d(point_position, 8.0, color);
 
         self
     }

@@ -36,7 +36,7 @@ fn test(mut visualizer: AxisVisualizer<AxisX, AxisY>) {
         Vec2::splat(200.0),
         Srgba::BLUE,
     );
-    visualizer.axis_circle(200.0, 200.0, Srgba::RED);
+    visualizer.axis_circle(Vec2::ZERO, 200.0, 200.0, Srgba::RED);
 }
 
 fn setup(mut commands: Commands) {
