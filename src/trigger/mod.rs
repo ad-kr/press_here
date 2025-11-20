@@ -5,6 +5,7 @@ use std::{any::Any, marker::PhantomData};
 
 mod bindings;
 pub mod combinators;
+pub mod modifiers;
 
 pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     fn pressed(&mut self, inputs: &Inputs) -> bool;
