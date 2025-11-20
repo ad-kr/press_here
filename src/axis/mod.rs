@@ -6,6 +6,7 @@ use std::{any::Any, marker::PhantomData};
 pub mod bindings;
 pub mod combinators;
 pub mod filters;
+pub mod modifiers;
 
 dyn_clone::clone_trait_object!(AxisBinding);
 

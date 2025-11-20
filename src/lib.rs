@@ -4,5 +4,5 @@ mod inputs;
 mod trigger;
 
 pub use app::AppExt;
-pub use axis::{Axis, AxisBinding, bindings::*, combinators::*, filters::*};
+pub use axis::{Axis, AxisBinding, bindings::*, combinators::*, filters::*, modifiers::*};
 pub use trigger::{Trigger, TriggerBinding, combinators::*};
