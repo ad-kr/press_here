@@ -2,20 +2,38 @@ use crate::{inputs::Inputs, trigger::TriggerBinding};
 use bevy::input::{gamepad::GamepadButton, keyboard::KeyCode, mouse::MouseButton};
 
 impl TriggerBinding for () {
-    fn pressed(&mut self, _inputs: &Inputs) -> bool {
+    fn pressed(&mut self, _: &Inputs) -> bool {
         false
     }
 
-    fn just_pressed(&mut self, _inputs: &Inputs) -> bool {
+    fn just_pressed(&mut self, _: &Inputs) -> bool {
         false
     }
 
-    fn just_released(&mut self, _inputs: &Inputs) -> bool {
+    fn just_released(&mut self, _: &Inputs) -> bool {
         false
     }
 
     fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
         Box::new(())
+    }
+}
+
+impl TriggerBinding for bool {
+    fn pressed(&mut self, _: &Inputs) -> bool {
+        *self
+    }
+
+    fn just_pressed(&mut self, _: &Inputs) -> bool {
+        false
+    }
+
+    fn just_released(&mut self, _: &Inputs) -> bool {
+        false
+    }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        Box::new(*self)
     }
 }
 
