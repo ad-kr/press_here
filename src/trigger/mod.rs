@@ -4,7 +4,7 @@ use dyn_clone::DynClone;
 use std::{any::Any, marker::PhantomData};
 
 mod bindings;
-mod combinators;
+pub mod combinators;
 
 pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     fn pressed(&mut self, inputs: &Inputs) -> bool;
