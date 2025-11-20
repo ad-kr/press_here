@@ -16,3 +16,7 @@ path = "examples/basic.rs"
 [[example]]
 name = "change_binding"
 path = "examples/change_binding.rs"
+
+[[example]]
+name = "smoothing"
+path = "examples/smoothing.rs"
