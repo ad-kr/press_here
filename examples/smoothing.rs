@@ -1,4 +1,4 @@
-use bevy::{math::VectorSpace, prelude::*};
+use bevy::prelude::*;
 use press_here::{AppExt, AxisVisualizer, Deadzone, Pair, Smooth};
 use std::time::Duration;
 
