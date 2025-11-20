@@ -20,7 +20,8 @@ impl<A: AxisBinding + Clone> AxisBinding for Deadzone<A> {
     }
 }
 
-/// A filter that smooths axis values using [exponential smoothing][https://en.wikipedia.org/wiki/Exponential_smoothing#Basic_(simple)_exponential_smoothing].
+/// A filter that smooths axis values using
+/// [exponential smoothing][https://en.wikipedia.org/wiki/Exponential_smoothing#Basic_(simple)_exponential_smoothing].
 ///
 /// `tau` is the time constant that controls the amount of smoothing. Small `tau` values result in less smoothing (more
 /// responsive), while large `tau` values result in more smoothing (less responsive).
