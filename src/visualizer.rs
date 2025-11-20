@@ -119,8 +119,7 @@ impl<X: Send + Sync + 'static, Y: Send + Sync + 'static> AxisVisualizer<'_, '_, 
         };
         let point_position = point * scale + position;
 
-        self.gizmos
-            .circle_2d(point_position, radius, Srgba::gray(0.7));
+        self.gizmos.circle_2d(position, radius, Srgba::gray(0.7));
         self.gizmos.circle_2d(point_position, 8.0, color);
 
         self
