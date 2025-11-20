@@ -19,6 +19,23 @@ impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> Axis
     }
 }
 
+#[derive(Clone, Copy)]
+pub struct Transformation<A: AxisBinding, F: Fn(f32) -> f32>(pub A, pub F);
+
+impl<A: AxisBinding + Clone, F: Fn(f32) -> f32 + Clone + Send + Sync + 'static> AxisBinding
+    for Transformation<A, F>
+{
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let value = self.0.value(inputs)?;
+
+        Some((self.1)(value))
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}
+
 /// A modifier that multiplies two axis values together.
 #[derive(Clone, Copy)]
 pub struct Multiply<A: AxisBinding, B: AxisBinding>(pub A, pub B);
