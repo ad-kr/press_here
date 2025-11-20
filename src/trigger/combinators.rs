@@ -1,6 +1,28 @@
 use crate::{inputs::Inputs, trigger::TriggerBinding};
 use pastey::paste;
 
+impl<T: TriggerBinding + Clone> TriggerBinding for Vec<T> {
+    fn pressed(&self, inputs: &Inputs) -> bool {
+        self.iter().any(|binding| binding.pressed(inputs))
+    }
+
+    fn just_pressed(&self, inputs: &Inputs) -> bool {
+        self.iter().any(|binding| binding.just_pressed(inputs))
+    }
+
+    fn just_released(&self, inputs: &Inputs) -> bool {
+        self.iter().any(|binding| binding.just_released(inputs))
+    }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        Box::new(self.clone())
+    }
+
+    fn all_triggers(&self) -> Vec<Box<dyn TriggerBinding>> {
+        self.iter().map(|b| b.clone_trigger()).collect()
+    }
+}
+
 macro_rules! impl_tuple {
     ($($t:expr),*) => {
         paste! {
@@ -15,6 +37,14 @@ macro_rules! impl_tuple {
 
                 fn just_released(&self, inputs: &Inputs) -> bool {
                     false $(|| self.$t.just_released(inputs))*
+                }
+
+                fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+                    Box::new(self.clone())
+                }
+
+                fn all_triggers(&self) -> Vec<Box<dyn TriggerBinding>> {
+                    vec![$(self.$t.clone_trigger()),*]
                 }
             }
         }

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use press_here::{AppExt, Axis, Pair, Trigger};
+use press_here::{AppExt, Axis, AxisBinding, Pair, Trigger};
 
 fn main() {
     App::new()
@@ -17,11 +17,17 @@ pub struct SomeAxis;
 fn change_axis_binding(trigger: Res<Trigger<ChangeBinding>>, mut axis: ResMut<Axis<SomeAxis>>) {
     if trigger.just_pressed() {
         let current = axis.binding();
-        let Some(mut all) = current.split() else {
-            return;
-        };
+        let mut all = current.all_axes();
 
-        all[0] = Box::new(Pair(KeyCode::ArrowLeft, KeyCode::ArrowRight));
+        let first = &all[0];
+
+        if let Some(pair) = first.as_any().downcast_ref::<Pair<KeyCode, KeyCode>>() {
+            if pair.0 == KeyCode::KeyA {
+                all[0] = Box::new(Pair(KeyCode::ArrowLeft, KeyCode::ArrowRight));
+            } else {
+                all[0] = Box::new(Pair(KeyCode::KeyA, KeyCode::KeyD));
+            }
+        }
 
         axis.set_binding(all);
     }

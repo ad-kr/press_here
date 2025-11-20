@@ -1,20 +1,47 @@
 use crate::inputs::Inputs;
 use bevy::ecs::resource::Resource;
 use dyn_clone::DynClone;
-use std::marker::PhantomData;
+use std::{any::Any, marker::PhantomData};
 
 mod bindings;
 mod combinators;
 
-pub trait TriggerBinding: DynClone + Send + Sync + 'static {
+pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     fn pressed(&self, inputs: &Inputs) -> bool;
     fn just_pressed(&self, inputs: &Inputs) -> bool;
     fn just_released(&self, inputs: &Inputs) -> bool;
 
+    /// Clones the inner value and returns it as a boxed trait object.
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding>;
+
+    /// Clones the inner value and returns it as a boxed `Any` trait object.
+    fn as_any(&self) -> Box<dyn Any> {
+        self.clone_trigger() as Box<dyn Any>
+    }
+
     /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding into its components and
-    /// return a vec of boxed bindings. Otherwise, returns None.
-    fn split(&self) -> Option<Vec<Box<dyn TriggerBinding>>> {
-        None
+    /// return a vec of boxed bindings. Otherwise, returns a vector with a single binding.
+    ///
+    /// # Examples
+    /// ```
+    /// use bevy::prelude::{KeyCode, MouseButton};
+    /// use press_here::TriggerBinding;
+    ///
+    /// let binding = (KeyCode::KeyA, MouseButton::Right);
+    /// let components = binding.all_triggers();
+    ///
+    /// assert_eq!(components.len(), 2);
+    /// assert_eq!(
+    ///     components[0].as_any().downcast_ref::<KeyCode>(),
+    ///     Some(&KeyCode::KeyA)
+    /// );
+    /// assert_eq!(
+    ///     components[1].as_any().downcast_ref::<MouseButton>(),
+    ///     Some(&MouseButton::Right)
+    /// );
+    /// ```
+    fn all_triggers(&self) -> Vec<Box<dyn TriggerBinding>> {
+        vec![self.clone_trigger()]
     }
 }
 

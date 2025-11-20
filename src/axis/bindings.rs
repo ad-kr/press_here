@@ -9,11 +9,19 @@ impl AxisBinding for () {
     fn value(&self, _inputs: &Inputs) -> Option<f32> {
         None
     }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(())
+    }
 }
 
 impl AxisBinding for KeyCode {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         inputs.keycodes.pressed(*self).then_some(1.0)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
     }
 }
 
@@ -21,11 +29,19 @@ impl AxisBinding for MouseButton {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         inputs.mouse_buttons.pressed(*self).then_some(1.0)
     }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
+    }
 }
 
 impl AxisBinding for GamepadButton {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         inputs.gamepads.iter().find_map(|pad| pad.get(*self))
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
     }
 }
 
@@ -41,6 +57,10 @@ impl AxisBinding for MouseX {
         let sum = inputs.mouse_motion.iter().map(|m| m.delta.x).sum();
         Some(sum)
     }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -54,6 +74,10 @@ impl AxisBinding for MouseY {
 
         let sum = inputs.mouse_motion.iter().map(|m| m.delta.y).sum();
         Some(sum)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
     }
 }
 
@@ -85,6 +109,10 @@ impl AxisBinding for MouseWheel {
 
         Some(sum)
     }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
+    }
 }
 
 impl AxisBinding for GamepadAxis {
@@ -96,10 +124,18 @@ impl AxisBinding for GamepadAxis {
         }
         None
     }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(*self)
+    }
 }
 
 impl AxisBinding for Box<dyn AxisBinding> {
     fn value(&self, inputs: &Inputs) -> Option<f32> {
         self.as_ref().value(inputs)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        self.clone()
     }
 }

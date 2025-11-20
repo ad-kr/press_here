@@ -13,6 +13,10 @@ impl TriggerBinding for () {
     fn just_released(&self, _inputs: &Inputs) -> bool {
         false
     }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        Box::new(())
+    }
 }
 
 impl TriggerBinding for KeyCode {
@@ -26,6 +30,10 @@ impl TriggerBinding for KeyCode {
 
     fn just_released(&self, inputs: &Inputs) -> bool {
         inputs.keycodes.just_released(*self)
+    }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        Box::new(*self)
     }
 }
 
@@ -41,6 +49,10 @@ impl TriggerBinding for MouseButton {
     fn just_released(&self, inputs: &Inputs) -> bool {
         inputs.mouse_buttons.just_released(*self)
     }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        Box::new(*self)
+    }
 }
 
 impl TriggerBinding for GamepadButton {
@@ -55,6 +67,10 @@ impl TriggerBinding for GamepadButton {
     fn just_released(&self, inputs: &Inputs) -> bool {
         inputs.gamepads.iter().any(|pad| pad.just_released(*self))
     }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        Box::new(*self)
+    }
 }
 
 impl TriggerBinding for Box<dyn TriggerBinding> {
@@ -68,5 +84,9 @@ impl TriggerBinding for Box<dyn TriggerBinding> {
 
     fn just_released(&self, inputs: &Inputs) -> bool {
         self.as_ref().just_released(inputs)
+    }
+
+    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+        self.clone()
     }
 }

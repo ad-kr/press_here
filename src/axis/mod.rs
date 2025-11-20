@@ -1,22 +1,49 @@
 use crate::inputs::Inputs;
 use bevy::ecs::resource::Resource;
 use dyn_clone::DynClone;
-use std::marker::PhantomData;
+use std::{any::Any, marker::PhantomData};
 
 pub mod bindings;
 pub mod combinators;
 
-pub trait AxisBinding: DynClone + Send + Sync + 'static {
+dyn_clone::clone_trait_object!(AxisBinding);
+
+pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
     fn value(&self, inputs: &Inputs) -> Option<f32>;
 
+    /// Clones the inner value and returns it as a boxed trait object.
+    fn clone_axis(&self) -> Box<dyn AxisBinding>;
+
+    /// Clones the inner value and returns it as a boxed `Any` trait object.
+    fn as_any(&self) -> Box<dyn Any> {
+        self.clone_axis() as Box<dyn Any>
+    }
+
     /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding into its components and
-    /// return a vec of boxed bindings. Otherwise, returns None.
-    fn split(&self) -> Option<Vec<Box<dyn AxisBinding>>> {
-        None
+    /// return a vec of boxed bindings. Otherwise, returns a vector with a single binding.
+    ///
+    /// # Examples
+    /// ```
+    /// use bevy::prelude::{KeyCode, GamepadAxis};
+    /// use press_here::AxisBinding;
+    ///
+    /// let binding = (KeyCode::KeyA, GamepadAxis::LeftStickX);
+    /// let components = binding.all_axes();
+    ///
+    /// assert_eq!(components.len(), 2);
+    /// assert_eq!(
+    ///     components[0].as_any().downcast_ref::<KeyCode>(),
+    ///     Some(&KeyCode::KeyA)
+    /// );
+    /// assert_eq!(
+    ///     components[1].as_any().downcast_ref::<GamepadAxis>(),
+    ///     Some(&GamepadAxis::LeftStickX)
+    /// );
+    /// ```
+    fn all_axes(&self) -> Vec<Box<dyn AxisBinding>> {
+        vec![self.clone_axis()]
     }
 }
-
-dyn_clone::clone_trait_object!(AxisBinding);
 
 #[derive(Resource)]
 pub struct Axis<A> {
