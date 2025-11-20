@@ -4,6 +4,7 @@ use dyn_clone::DynClone;
 use std::{any::Any, marker::PhantomData};
 
 pub mod bindings;
+pub mod builder;
 pub mod combinators;
 pub mod filters;
 pub mod modifiers;
