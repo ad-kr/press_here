@@ -5,4 +5,4 @@ mod trigger;
 
 pub use app::AppExt;
 pub use axis::{Axis, AxisBinding, bindings::*, combinators::*, filters::*};
-pub use trigger::{Trigger, TriggerBinding};
+pub use trigger::{Trigger, TriggerBinding, combinators::*};
