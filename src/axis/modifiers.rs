@@ -86,3 +86,19 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Subtract<A,
         Box::new(self.clone())
     }
 }
+
+/// A modifier that inverts the axis value.
+#[derive(Clone, Copy)]
+pub struct Invert<A: AxisBinding>(pub A);
+
+impl<A: AxisBinding + Clone> AxisBinding for Invert<A> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let value = self.0.value(inputs)?;
+
+        Some(-value)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}
