@@ -52,7 +52,7 @@ fn main() {
         .add_axis::<MouseMovementAxis>(MouseY) // Binding that returns the mouse movement delta. Also works for MouseX.
         .add_axis::<MouseWheelAxis>(MouseWheel::default()) // Binding that returns the mouse wheel scroll delta.
         .add_axis::<BoxedAxis>(Box::new(KeyCode::KeyW) as Box<dyn AxisBinding>) // Box<dyn AxisBinding> also implements the AxisBinding trait.
-        // Axis ombinators
+        // Axis combinators
         .add_axis::<TupleAxis>((KeyCode::KeyW, GamepadAxis::LeftStickX)) // Tuple of AxisBindings. All active bindings are averaged.
         .add_axis::<VecAxis>(vec![KeyCode::KeyW, KeyCode::ArrowUp]) // Vec of AxisBindings. All active bindings are averaged.
         .add_axis::<PairAxis>(Pair(KeyCode::KeyS, KeyCode::KeyW)) // Pair combinator that uses the first binding for negative direction and the second for positive.
