@@ -68,6 +68,8 @@ let binding = (
 
 - Better documentation.
   - Currently most structs have some comments and the crate is rather straight forward, but better examples in comments could be provided.
+- Binding information.
+  - Add basic info to each binding so that we can know what bindings are set. Right now we would need to iterate over each binding and downcast its type. Not optimal.
 - Observer support.
   - Currently you have to set up event triggering yourself. This can be streamlined.
 - Referring to existing axes and triggers.
