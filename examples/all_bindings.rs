@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use press_here::{
-    Add, And, AppExt, AxisBinding, AxisBindingBuilder, AxisVisualizer, Deadzone, Divide, Invert,
-    MouseWheel, MouseY, Multiply, Normalize, Not, Pair, Smooth, Subtract, Transformation, Trigger,
-    TriggerBinding, WithCurve, WithTriggerBinding,
+    Add, And, AppExt, AxisBinding, AxisBindingBuilder, AxisVisualizer, Clamp, Deadzone, Divide,
+    Invert, MouseWheel, MouseY, Multiply, Normalize, Not, Pair, RateLimit, Remap, Smooth, Subtract,
+    Transformation, Trigger, TriggerBinding, WithCurve, WithTriggerBinding,
 };
 use std::time::Duration;
 
@@ -52,7 +52,7 @@ fn main() {
         .add_axis::<MouseMovementAxis>(MouseY) // Binding that returns the mouse movement delta. Also works for MouseX.
         .add_axis::<MouseWheelAxis>(MouseWheel::default()) // Binding that returns the mouse wheel scroll delta.
         .add_axis::<BoxedAxis>(Box::new(KeyCode::KeyW) as Box<dyn AxisBinding>) // Box<dyn AxisBinding> also implements the AxisBinding trait.
-        // Axis ombinators
+        // Axis combinators
         .add_axis::<TupleAxis>((KeyCode::KeyW, GamepadAxis::LeftStickX)) // Tuple of AxisBindings. All active bindings are averaged.
         .add_axis::<VecAxis>(vec![KeyCode::KeyW, KeyCode::ArrowUp]) // Vec of AxisBindings. All active bindings are averaged.
         .add_axis::<PairAxis>(Pair(KeyCode::KeyS, KeyCode::KeyW)) // Pair combinator that uses the first binding for negative direction and the second for positive.
@@ -61,6 +61,8 @@ fn main() {
         .add_axis::<DeadzoneAxis>(Deadzone(GamepadAxis::LeftStickX, 0.2)) // Deadzone filter that ignores small input values.
         .add_axis::<SmoothAxis>(Smooth::new(GamepadAxis::LeftStickX, 0.1)) // Smooth filter that smooths input values over time.
         .add_axis::<NormalizeAxis>(Normalize(GamepadAxis::LeftStickX, GamepadAxis::LeftStickY)) // Constrain the first given axis to a unit circle when combined with the second axis.
+        .add_axis::<RateLimitAxis>(RateLimit::new(GamepadAxis::LeftStickX, 1.0)) // Rate limit filter that limits how quickly the axis value can change over time.
+        .add_axis::<ClampAxis>(Clamp(GamepadAxis::LeftStickX, -0.5, 0.5)) // Clamp filter that clamps the axis value to the given min and max.
         // Axis modifiers
         .add_axis::<MultiplyAxis>(Multiply(GamepadAxis::LeftStickX, 0.5)) // Modifier that multiplies two axis values together.
         .add_axis::<DivideAxis>(Divide(GamepadAxis::LeftStickX, 2.0)) // Modifier that divides the first axis by the second axis.
@@ -69,6 +71,7 @@ fn main() {
         .add_axis::<InvertAxis>(Invert(GamepadAxis::LeftStickX)) // Invert modifier that negates the axis value.
         .add_axis::<WithCurveAxis>(WithCurve(GamepadAxis::LeftStickX, EaseFunction::BounceIn)) // Modifier that applies a curve to the axis value.
         .add_axis::<TransformationAxis>(Transformation(GamepadAxis::LeftStickX, |v| v * v)) // Modifier that applies a custom transformation function to the axis value.
+        .add_axis::<RemapAxis>(Remap(GamepadAxis::LeftStickX, -1.0, 1.0, 0.0, 1.0)) // Modifier that remaps the axis value from one range to another.
         //
         // Triggers:
         //
@@ -118,6 +121,8 @@ struct WithTriggerAxis;
 struct DeadzoneAxis;
 struct SmoothAxis;
 struct NormalizeAxis;
+struct RateLimitAxis;
+struct ClampAxis;
 
 struct MultiplyAxis;
 struct DivideAxis;
@@ -126,6 +131,7 @@ struct SubtractAxis;
 struct InvertAxis;
 struct WithCurveAxis;
 struct TransformationAxis;
+struct RemapAxis;
 
 struct EmptyTrigger;
 struct ConstantTrigger;
@@ -179,12 +185,17 @@ fn visualize_filters(
     mut deadzone: AxisVisualizer<DeadzoneAxis>,
     mut smooth: AxisVisualizer<SmoothAxis>,
     mut normalize: AxisVisualizer<NormalizeAxis>,
+    mut rate_limit: AxisVisualizer<RateLimitAxis>,
+    mut clamp: AxisVisualizer<ClampAxis>,
 ) {
     graph(&mut deadzone, 0, 2, SCALE);
     graph(&mut smooth, 1, 2, SCALE);
     graph(&mut normalize, 2, 2, SCALE);
+    graph(&mut rate_limit, 3, 2, SCALE);
+    graph(&mut clamp, 4, 2, SCALE);
 }
 
+#[allow(clippy::too_many_arguments)]
 fn visualize_modifiers(
     mut multiply: AxisVisualizer<MultiplyAxis>,
     mut divide: AxisVisualizer<DivideAxis>,
@@ -193,6 +204,7 @@ fn visualize_modifiers(
     mut invert: AxisVisualizer<InvertAxis>,
     mut with_curve: AxisVisualizer<WithCurveAxis>,
     mut transformation: AxisVisualizer<TransformationAxis>,
+    mut remap: AxisVisualizer<RemapAxis>,
 ) {
     graph(&mut multiply, 0, 3, SCALE);
     graph(&mut divide, 1, 3, SCALE);
@@ -201,6 +213,7 @@ fn visualize_modifiers(
     graph(&mut invert, 4, 3, SCALE);
     graph(&mut with_curve, 5, 3, SCALE);
     graph(&mut transformation, 6, 3, SCALE);
+    graph(&mut remap, 7, 3, SCALE);
 }
 
 #[allow(clippy::too_many_arguments)]

@@ -127,3 +127,43 @@ impl<A: AxisBinding + Clone> AxisBinding for Invert<A> {
         Box::new(self.clone())
     }
 }
+
+/// A modifier that remaps the axis value from one range to another.
+///
+/// # Examples
+/// ```no_run
+/// # use press_here::Remap;
+/// # let binding = 0.5;
+/// let mut remapped = Remap(binding, 0.0, 1.0, -1.0, 1.0);
+/// ```
+///
+/// This is especially useful when using together with the [Deadzone](crate::axis::filters::Deadzone) filter to remap
+/// the output range after applying a deadzone.
+///
+/// ``` no_run
+/// # use press_here::{Remap, AxisBindingBuilder};
+/// # let binding = 0.5;
+/// // Instead of "jumping" from 0.0 to 0.2, the axis will linearly interpolate from 0.0 to 1.0 as the input
+/// // moves from 0.2 to 1.0.
+/// let mut remapped = binding
+///     .deadzone(0.2)
+///     .remap(0.2, 1.0, 0.0, 1.0);
+/// ```
+///
+#[derive(Clone, Copy)]
+pub struct Remap<A: AxisBinding>(pub A, pub f32, pub f32, pub f32, pub f32);
+
+impl<A: AxisBinding + Clone> AxisBinding for Remap<A> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let value = self.0.value(inputs)?;
+
+        let (in_min, in_max, out_min, out_max) = (self.1, self.2, self.3, self.4);
+        let t = (value - in_min) / (in_max - in_min);
+        let value = out_min + t * (out_max - out_min);
+
+        Some(value)
+    }
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}
