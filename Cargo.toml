@@ -1,7 +1,13 @@
 [package]
 name = "press_here"
+description = "Simple and modular input handling for Bevy"
 version = "0.1.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ad-kr/press_here"
+readme = "README.md"
+keywords = ["bevy", "input"]
+categories = ["game-development", "input-handling"]
 
 [dependencies]
 bevy = "0.17.3"
