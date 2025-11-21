@@ -48,6 +48,26 @@ pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
     }
 }
 
+/// A resource that holds the current value and bindings for an axis.
+///
+/// # Examples
+/// Reading the value:
+/// ```no_run
+/// # use bevy::prelude::*;
+/// # use press_here::Axis;
+/// # struct MyAxis;
+/// fn system(axis: Res<Axis<MyAxis>>) {
+///    let value = axis.value();
+/// }
+/// ```
+/// Modfiying the binding:
+/// ```no_run
+/// # use bevy::prelude::*;
+/// # use press_here::Axis;
+/// # struct MyAxis;
+/// fn system(mut axis: ResMut<Axis<MyAxis>>) {
+///     axis.set_binding(KeyCode::KeyW);
+/// }
 #[derive(Resource)]
 pub struct Axis<A> {
     axis: PhantomData<A>,

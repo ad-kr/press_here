@@ -49,6 +49,27 @@ pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
 
 dyn_clone::clone_trait_object!(TriggerBinding);
 
+/// A resource that holds the current state and binding for a trigger.
+///
+/// # Examples
+/// Reading the state:
+/// ```no_run
+/// # use bevy::prelude::*;
+/// # use press_here::Trigger;
+/// # struct MyTrigger;
+/// fn system(trigger: Res<Trigger<MyTrigger>>) {
+///   let is_pressed = trigger.pressed();
+/// }
+/// ```
+/// Modifying the binding:
+/// ```no_run
+/// # use bevy::prelude::*;
+/// # use press_here::Trigger;
+/// # struct MyTrigger;
+/// fn system(mut trigger: ResMut<Trigger<MyTrigger>>) {
+///    trigger.set_binding(KeyCode::Space);
+/// }
+/// ```
 #[derive(Resource)]
 pub struct Trigger<T> {
     trigger: PhantomData<T>,
