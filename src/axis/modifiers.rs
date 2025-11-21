@@ -22,7 +22,9 @@ impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> Axis
 /// A modifier that applies a custom transformation function to the axis value.
 ///
 /// # Examples
-/// ```ignore
+/// ```no_run
+/// # use bevy::prelude::*;
+/// # use press_here::Transformation;
 /// let binding = Transformation(GamepadAxis::LeftStickY, |value| value.powi(3));
 /// ```
 #[derive(Clone, Copy)]

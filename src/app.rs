@@ -18,10 +18,15 @@ impl AppExt for App {
     /// necessary systems to update it.
     ///
     /// # Examples
-    /// ```ignore
+    /// ```no_run
+    /// # use bevy::prelude::*;
+    /// # use press_here::AppExt;
     /// App::new()
     ///    .add_trigger::<MyTrigger>(KeyCode::Space)
     ///    .add_trigger::<OtherTrigger>(GamepadButton::South);;
+    ///
+    /// # struct MyTrigger;
+    /// # struct OtherTrigger;
     /// ```
     fn add_trigger<T: Send + Sync + 'static>(&mut self, binding: impl TriggerBinding) -> &mut Self {
         let trigger = Trigger::<T>::new(binding);
@@ -34,12 +39,16 @@ impl AppExt for App {
     /// systems to update it.
     ///
     /// # Examples
-    /// ```ignore
+    /// ```no_run
+    /// # use bevy::prelude::*;
+    /// # use press_here::{AppExt, Pair, AxisBindingBuilder};
     /// App::new()
     ///   .add_axis::<MyAxis>((
     ///       Pair(KeyCode::KeyA, KeyCode::KeyD),
     ///       GamepadAxis::LeftStickX.deadzone(0.1),
     ///   ));
+    ///
+    /// # struct MyAxis;
     /// ```
     fn add_axis<A: Send + Sync + 'static>(&mut self, binding: impl AxisBinding) -> &mut Self {
         let axis = Axis::<A>::new(binding);
