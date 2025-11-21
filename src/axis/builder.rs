@@ -1,5 +1,5 @@
 use crate::{
-    Add, AxisBinding, Divide, Invert, Normalize, RateLimit, Subtract, TriggerBinding,
+    Add, AxisBinding, Divide, Invert, Normalize, RateLimit, Remap, Subtract, TriggerBinding,
     WithTriggerBinding,
     axis::{
         filters::{Deadzone, Smooth},
@@ -67,6 +67,11 @@ pub trait AxisBindingBuilder: AxisBinding + Sized {
     /// Returns a new axis binding that inverts this axis value.
     fn invert(self) -> Invert<Self> {
         Invert(self)
+    }
+
+    /// Remaps the axis value from one range to another.
+    fn remap(self, in_min: f32, in_max: f32, out_min: f32, out_max: f32) -> Remap<Self> {
+        Remap(self, in_min, in_max, out_min, out_max)
     }
 }
 
