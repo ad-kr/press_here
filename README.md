@@ -1,4 +1,3 @@
-/*!
 # 👉 Press Here 👈
 
 `press_here` provides simple and modular input handling for the [Bevy](https://docs.rs/bevy/) game engine.
@@ -7,10 +6,7 @@
 
 Setup is quick and easy. Define axis/trigger and configure bindings:
 
-```no_run
-# use bevy::prelude::*;
-# use press_here::{AppExt, Axis, AxisBindingBuilder, Pair, Trigger};
-
+```rs
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -39,18 +35,13 @@ fn update(jump: Res<Trigger<Jump>>, walk: Res<Axis<Walk>>) {
         walk_character(walk_value);
     }
 }
-
-# fn jump_character() {}
-# fn walk_character(_value: f32) {}
 ```
 
 ## Super modular
 
 Axis and trigger bindings are modular and can be combined to configure complex input responses. Check out the [all_bindings](https://github.com/ad-kr/press_here/blob/main/examples/all_bindings.rs) example to see all bindings and modfiers in action.
 
-```no_run
-# use bevy::prelude::*;
-# use press_here::{Deadzone, Pair, Smooth};
+```rs
 let binding = Smooth::new(
     (
         Pair(KeyCode::KeyA, KeyCode::KeyD),
@@ -62,9 +53,7 @@ let binding = Smooth::new(
 
 The same binding can be defined using the builder pattern:
 
-```no_run
-# use bevy::prelude::*;
-# use press_here::{AxisBindingBuilder, Pair};
+```rs
 let binding = (
     Pair(KeyCode::KeyA, KeyCode::KeyD),
     GamepadAxis::LeftStickX.deadzone(0.1),
@@ -91,17 +80,3 @@ let binding = (
 | Bevy | press_here |
 | ---- | ---------- |
 | 0.17 | 0.1        |
-*/
-mod app;
-mod axis;
-mod inputs;
-mod trigger;
-mod visualizer;
-
-pub use app::AppExt;
-pub use axis::{
-    Axis, AxisBinding, bindings::*, builder::*, combinators::*, filters::*, modifiers::*,
-};
-pub use trigger::{Trigger, TriggerBinding, builder::*, combinators::*, modifiers::*};
-#[cfg(feature = "visualizer")]
-pub use visualizer::*;
