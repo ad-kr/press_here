@@ -7,7 +7,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/ad-kr/press_here"
 readme = "README.md"
 keywords = ["bevy", "input"]
-categories = ["game-development", "input-handling"]
+categories = ["game-development"]
 
 [dependencies]
 bevy = "0.17.3"
