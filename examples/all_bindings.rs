@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use press_here::{
-    Add, And, AppExt, AxisBinding, AxisBindingBuilder, AxisVisualizer, Deadzone, Divide, Invert,
-    MouseWheel, MouseY, Multiply, Normalize, Not, Pair, RateLimit, Remap, Smooth, Subtract,
+    Add, And, AppExt, AxisBinding, AxisBindingBuilder, AxisVisualizer, Clamp, Deadzone, Divide,
+    Invert, MouseWheel, MouseY, Multiply, Normalize, Not, Pair, RateLimit, Remap, Smooth, Subtract,
     Transformation, Trigger, TriggerBinding, WithCurve, WithTriggerBinding,
 };
 use std::time::Duration;
@@ -62,6 +62,7 @@ fn main() {
         .add_axis::<SmoothAxis>(Smooth::new(GamepadAxis::LeftStickX, 0.1)) // Smooth filter that smooths input values over time.
         .add_axis::<NormalizeAxis>(Normalize(GamepadAxis::LeftStickX, GamepadAxis::LeftStickY)) // Constrain the first given axis to a unit circle when combined with the second axis.
         .add_axis::<RateLimitAxis>(RateLimit::new(GamepadAxis::LeftStickX, 1.0)) // Rate limit filter that limits how quickly the axis value can change over time.
+        .add_axis::<ClampAxis>(Clamp(GamepadAxis::LeftStickX, -0.5, 0.5)) // Clamp filter that clamps the axis value to the given min and max.
         // Axis modifiers
         .add_axis::<MultiplyAxis>(Multiply(GamepadAxis::LeftStickX, 0.5)) // Modifier that multiplies two axis values together.
         .add_axis::<DivideAxis>(Divide(GamepadAxis::LeftStickX, 2.0)) // Modifier that divides the first axis by the second axis.
@@ -121,6 +122,7 @@ struct DeadzoneAxis;
 struct SmoothAxis;
 struct NormalizeAxis;
 struct RateLimitAxis;
+struct ClampAxis;
 
 struct MultiplyAxis;
 struct DivideAxis;
@@ -184,11 +186,13 @@ fn visualize_filters(
     mut smooth: AxisVisualizer<SmoothAxis>,
     mut normalize: AxisVisualizer<NormalizeAxis>,
     mut rate_limit: AxisVisualizer<RateLimitAxis>,
+    mut clamp: AxisVisualizer<ClampAxis>,
 ) {
     graph(&mut deadzone, 0, 2, SCALE);
     graph(&mut smooth, 1, 2, SCALE);
     graph(&mut normalize, 2, 2, SCALE);
     graph(&mut rate_limit, 3, 2, SCALE);
+    graph(&mut clamp, 4, 2, SCALE);
 }
 
 #[allow(clippy::too_many_arguments)]

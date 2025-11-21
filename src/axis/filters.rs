@@ -94,7 +94,7 @@ impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
 /// # use press_here::RateLimit;
 /// # let binding = 1.0;
 /// let maximum_rate = 0.5; // units per second
-/// let mut limited_axis = RateLimit::new(binding, maximum_rate);
+/// let limited_axis = RateLimit::new(binding, maximum_rate);
 /// ```
 #[derive(Clone, Copy)]
 pub struct RateLimit<A: AxisBinding> {
@@ -125,6 +125,29 @@ impl<A: AxisBinding + Clone> AxisBinding for RateLimit<A> {
         self.previous_value = value;
 
         Some(value)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}
+
+/// Clamps the binding value to a specified range.
+///
+/// # Examples
+/// ```no_run
+/// # use press_here::Clamp;
+/// # let binding = 1.0;
+/// let clamped = Clamp(binding, -0.5, 0.5);
+/// ```
+#[derive(Clone, Copy)]
+pub struct Clamp<A: AxisBinding>(pub A, pub f32, pub f32);
+
+impl<A: AxisBinding + Clone> AxisBinding for Clamp<A> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let value = self.0.value(inputs)?;
+
+        Some(value.clamp(self.1, self.2))
     }
 
     fn clone_axis(&self) -> Box<dyn AxisBinding> {
