@@ -1,5 +1,8 @@
 # 👉 Press Here 👈
 
+[![Crates.io](https://img.shields.io/crates/v/press_here.svg)](https://crates.io/crates/press_here)
+[![docs.rs](https://img.shields.io/docsrs/press_here/latest)](https://docs.rs/press_here/latest)
+
 `press_here` provides simple and modular input handling for the [Bevy](https://docs.rs/bevy/) game engine.
 
 ## Example
