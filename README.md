@@ -72,6 +72,8 @@ let binding = (
   - Add basic info to each binding so that we can know what bindings are set. Right now we would need to iterate over each binding and downcast its type. Not optimal.
 - Observer support.
   - Currently you have to set up event triggering yourself. This can be streamlined.
+- Tests
+  - We could write simple unit tests for each binding. `Inputs`-mocking should be made easier. This would also allow us to make create better doc-comments/tests.
 - Referring to existing axes and triggers.
   - It would be nice to be able to refer to other already defined triggers and axes. This would allow us to do something like `.with_trigger::<SomeTrigger>()`.
 - Schedule configuration.
