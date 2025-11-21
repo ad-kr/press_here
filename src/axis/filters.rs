@@ -86,3 +86,48 @@ impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
         Box::new(self.clone())
     }
 }
+
+/// Limits the rate of change of an axis value to a maximum delta per second.
+///
+/// # Examples
+/// ```no_run
+/// # use press_here::RateLimit;
+/// # let binding = 1.0;
+/// let maximum_rate = 0.5; // units per second
+/// let mut limited_axis = RateLimit::new(binding, maximum_rate);
+/// ```
+#[derive(Clone, Copy)]
+pub struct RateLimit<A: AxisBinding> {
+    pub binding: A,
+    pub max_rate: f32,
+    previous_value: f32,
+}
+
+impl<A: AxisBinding> RateLimit<A> {
+    pub fn new(binding: A, max_rate: f32) -> Self {
+        Self {
+            binding,
+            max_rate,
+            previous_value: 0.0,
+        }
+    }
+}
+
+impl<A: AxisBinding + Clone> AxisBinding for RateLimit<A> {
+    fn value(&mut self, inputs: &Inputs) -> Option<f32> {
+        let target = self.binding.value(inputs)?;
+        let dt = inputs.time.delta_secs();
+
+        let max_delta = self.max_rate * dt;
+        let delta = (target - self.previous_value).clamp(-max_delta, max_delta);
+
+        let value = self.previous_value + delta;
+        self.previous_value = value;
+
+        Some(value)
+    }
+
+    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+        Box::new(self.clone())
+    }
+}

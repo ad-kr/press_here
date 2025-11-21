@@ -1,5 +1,6 @@
 use crate::{
-    Add, AxisBinding, Divide, Invert, Normalize, Subtract, TriggerBinding, WithTriggerBinding,
+    Add, AxisBinding, Divide, Invert, Normalize, RateLimit, Subtract, TriggerBinding,
+    WithTriggerBinding,
     axis::{
         filters::{Deadzone, Smooth},
         modifiers::{Multiply, Transformation, WithCurve},
@@ -26,6 +27,11 @@ pub trait AxisBindingBuilder: AxisBinding + Sized {
     // Normalizes this axis value so that the combined magnitude of this and the perpendicular axes is at most 1.0.
     fn normalize<A: AxisBinding>(self, perpendicular: A) -> Normalize<Self, A> {
         Normalize(self, perpendicular)
+    }
+
+    /// Returns a new axis binding that applies a rate limit filter with the given maximum rate of change.
+    fn limit_rate(self, max_rate: f32) -> RateLimit<Self> {
+        RateLimit::new(self, max_rate)
     }
 
     /// Returns a new axis binding that applies the given curve to the axis value.

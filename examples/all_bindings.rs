@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use press_here::{
     Add, And, AppExt, AxisBinding, AxisBindingBuilder, AxisVisualizer, Deadzone, Divide, Invert,
-    MouseWheel, MouseY, Multiply, Normalize, Not, Pair, Smooth, Subtract, Transformation, Trigger,
-    TriggerBinding, WithCurve, WithTriggerBinding,
+    MouseWheel, MouseY, Multiply, Normalize, Not, Pair, RateLimit, Smooth, Subtract,
+    Transformation, Trigger, TriggerBinding, WithCurve, WithTriggerBinding,
 };
 use std::time::Duration;
 
@@ -61,6 +61,7 @@ fn main() {
         .add_axis::<DeadzoneAxis>(Deadzone(GamepadAxis::LeftStickX, 0.2)) // Deadzone filter that ignores small input values.
         .add_axis::<SmoothAxis>(Smooth::new(GamepadAxis::LeftStickX, 0.1)) // Smooth filter that smooths input values over time.
         .add_axis::<NormalizeAxis>(Normalize(GamepadAxis::LeftStickX, GamepadAxis::LeftStickY)) // Constrain the first given axis to a unit circle when combined with the second axis.
+        .add_axis::<RateLimitAxis>(RateLimit::new(GamepadAxis::LeftStickX, 1.0)) // Rate limit filter that limits how quickly the axis value can change over time.
         // Axis modifiers
         .add_axis::<MultiplyAxis>(Multiply(GamepadAxis::LeftStickX, 0.5)) // Modifier that multiplies two axis values together.
         .add_axis::<DivideAxis>(Divide(GamepadAxis::LeftStickX, 2.0)) // Modifier that divides the first axis by the second axis.
@@ -118,6 +119,7 @@ struct WithTriggerAxis;
 struct DeadzoneAxis;
 struct SmoothAxis;
 struct NormalizeAxis;
+struct RateLimitAxis;
 
 struct MultiplyAxis;
 struct DivideAxis;
@@ -179,10 +181,12 @@ fn visualize_filters(
     mut deadzone: AxisVisualizer<DeadzoneAxis>,
     mut smooth: AxisVisualizer<SmoothAxis>,
     mut normalize: AxisVisualizer<NormalizeAxis>,
+    mut rate_limit: AxisVisualizer<RateLimitAxis>,
 ) {
     graph(&mut deadzone, 0, 2, SCALE);
     graph(&mut smooth, 1, 2, SCALE);
     graph(&mut normalize, 2, 2, SCALE);
+    graph(&mut rate_limit, 3, 2, SCALE);
 }
 
 fn visualize_modifiers(
