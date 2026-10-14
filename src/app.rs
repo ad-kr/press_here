@@ -5,7 +5,8 @@ use crate::{
 };
 use bevy::{
     app::{App, PreUpdate},
-    ecs::system::ResMut,
+    ecs::{schedule::IntoScheduleConfigs, system::ResMut},
+    input::InputSystems,
 };
 
 pub trait AppExt {
@@ -32,7 +33,7 @@ impl AppExt for App {
         let trigger = Trigger::<T>::new(binding);
 
         self.insert_resource(trigger)
-            .add_systems(PreUpdate, update_trigger::<T>)
+            .add_systems(PreUpdate, update_trigger::<T>.after(InputSystems))
     }
 
     /// Adds an axis to the app with the given binding. This will insert the axis as a resource and set up the necessary
@@ -54,7 +55,7 @@ impl AppExt for App {
         let axis = Axis::<A>::new(binding);
 
         self.insert_resource(axis)
-            .add_systems(PreUpdate, update_axis::<A>)
+            .add_systems(PreUpdate, update_axis::<A>.after(InputSystems))
     }
 }
 
