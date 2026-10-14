@@ -25,6 +25,11 @@ impl<X: Send + Sync + 'static, Y: Send + Sync + 'static> AxisVisualizer<'_, '_, 
         let x = self.axis_x.as_ref().map_or(0.0, |axis| axis.value());
         let y = self.axis_y.as_ref().map_or(0.0, |axis| axis.value());
         self.stored.insert(now, Vec2::new(x, y));
+
+        if self.stored.len() > 1000 {
+            let first_key = *self.stored.keys().next().unwrap();
+            self.stored.remove(&first_key);
+        }
     }
 
     /// Graphs the X axis values over time.
