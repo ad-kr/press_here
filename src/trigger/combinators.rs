@@ -18,8 +18,16 @@ impl<T1: TriggerBinding + Clone, T2: TriggerBinding + Clone> TriggerBinding for 
 
     fn just_released(&mut self, inputs: &Inputs) -> bool {
         let is_released = !self.pressed(inputs);
-        let was_released = self.0.just_released(inputs) || self.1.just_released(inputs);
-        is_released && was_released
+
+        // "just released" for "And" requires that both triggers were pressed before, so we check
+        // for that as well
+        let first_was_already_pressed = self.0.pressed(inputs) && !self.0.just_pressed(inputs);
+        let second_was_already_pressed = self.1.pressed(inputs) && !self.1.just_pressed(inputs);
+
+        let first_was_pressed = first_was_already_pressed || self.0.just_released(inputs);
+        let second_was_pressed = second_was_already_pressed || self.1.just_released(inputs);
+
+        is_released && first_was_pressed && second_was_pressed
     }
 
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
