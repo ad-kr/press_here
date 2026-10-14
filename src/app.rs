@@ -29,7 +29,15 @@ impl AppExt for App {
     /// # struct MyTrigger;
     /// # struct OtherTrigger;
     /// ```
+    ///
+    /// If a trigger of the same type already exists, the new one will be ignored.
     fn add_trigger<T: Send + Sync + 'static>(&mut self, binding: impl TriggerBinding) -> &mut Self {
+        let exists = self.world().get_resource::<Trigger<T>>().is_some();
+
+        if exists {
+            return self;
+        }
+
         let trigger = Trigger::<T>::new(binding);
 
         self.insert_resource(trigger)
@@ -51,7 +59,15 @@ impl AppExt for App {
     ///
     /// # struct MyAxis;
     /// ```
+    ///
+    /// If an axis of the same type already exists, the new one will be ignored.
     fn add_axis<A: Send + Sync + 'static>(&mut self, binding: impl AxisBinding) -> &mut Self {
+        let exists = self.world().get_resource::<Axis<A>>().is_some();
+
+        if exists {
+            return self;
+        }
+
         let axis = Axis::<A>::new(binding);
 
         self.insert_resource(axis)
