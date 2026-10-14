@@ -115,7 +115,7 @@ impl<A: AxisBinding> RateLimit<A> {
 
 impl<A: AxisBinding + Clone> AxisBinding for RateLimit<A> {
     fn value(&mut self, inputs: &Inputs) -> Option<f32> {
-        let target = self.binding.value(inputs)?;
+        let target = self.binding.value(inputs).unwrap_or(0.0);
         let dt = inputs.time.delta_secs();
 
         let max_delta = self.max_rate * dt;
