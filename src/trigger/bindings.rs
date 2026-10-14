@@ -6,14 +6,6 @@ impl TriggerBinding for () {
         false
     }
 
-    fn just_pressed(&mut self, _: &Inputs) -> bool {
-        false
-    }
-
-    fn just_released(&mut self, _: &Inputs) -> bool {
-        false
-    }
-
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(())
     }
@@ -22,14 +14,6 @@ impl TriggerBinding for () {
 impl TriggerBinding for bool {
     fn pressed(&mut self, _: &Inputs) -> bool {
         *self
-    }
-
-    fn just_pressed(&mut self, _: &Inputs) -> bool {
-        false
-    }
-
-    fn just_released(&mut self, _: &Inputs) -> bool {
-        false
     }
 
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
@@ -42,14 +26,6 @@ impl TriggerBinding for KeyCode {
         inputs.keycodes.pressed(*self)
     }
 
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        inputs.keycodes.just_pressed(*self)
-    }
-
-    fn just_released(&mut self, inputs: &Inputs) -> bool {
-        inputs.keycodes.just_released(*self)
-    }
-
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(*self)
     }
@@ -58,14 +34,6 @@ impl TriggerBinding for KeyCode {
 impl TriggerBinding for MouseButton {
     fn pressed(&mut self, inputs: &Inputs) -> bool {
         inputs.mouse_buttons.pressed(*self)
-    }
-
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        inputs.mouse_buttons.just_pressed(*self)
-    }
-
-    fn just_released(&mut self, inputs: &Inputs) -> bool {
-        inputs.mouse_buttons.just_released(*self)
     }
 
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
@@ -78,14 +46,6 @@ impl TriggerBinding for GamepadButton {
         inputs.gamepads.iter().any(|pad| pad.pressed(*self))
     }
 
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        inputs.gamepads.iter().any(|pad| pad.just_pressed(*self))
-    }
-
-    fn just_released(&mut self, inputs: &Inputs) -> bool {
-        inputs.gamepads.iter().any(|pad| pad.just_released(*self))
-    }
-
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(*self)
     }
@@ -94,14 +54,6 @@ impl TriggerBinding for GamepadButton {
 impl TriggerBinding for Box<dyn TriggerBinding> {
     fn pressed(&mut self, inputs: &Inputs) -> bool {
         self.as_mut().pressed(inputs)
-    }
-
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        self.as_mut().just_pressed(inputs)
-    }
-
-    fn just_released(&mut self, inputs: &Inputs) -> bool {
-        self.as_mut().just_released(inputs)
     }
 
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {

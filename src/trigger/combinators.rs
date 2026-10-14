@@ -10,26 +10,6 @@ impl<T1: TriggerBinding + Clone, T2: TriggerBinding + Clone> TriggerBinding for 
         self.0.pressed(inputs) && self.1.pressed(inputs)
     }
 
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        let is_pressed = self.pressed(inputs);
-        let was_pressed = self.0.just_pressed(inputs) || self.1.just_pressed(inputs);
-        is_pressed && was_pressed
-    }
-
-    fn just_released(&mut self, inputs: &Inputs) -> bool {
-        let is_released = !self.pressed(inputs);
-
-        // "just released" for "And" requires that both triggers were pressed before, so we check
-        // for that as well
-        let first_was_already_pressed = self.0.pressed(inputs) && !self.0.just_pressed(inputs);
-        let second_was_already_pressed = self.1.pressed(inputs) && !self.1.just_pressed(inputs);
-
-        let first_was_pressed = first_was_already_pressed || self.0.just_released(inputs);
-        let second_was_pressed = second_was_already_pressed || self.1.just_released(inputs);
-
-        is_released && first_was_pressed && second_was_pressed
-    }
-
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(self.clone())
     }
@@ -38,14 +18,6 @@ impl<T1: TriggerBinding + Clone, T2: TriggerBinding + Clone> TriggerBinding for 
 impl<T: TriggerBinding + Clone> TriggerBinding for Vec<T> {
     fn pressed(&mut self, inputs: &Inputs) -> bool {
         self.iter_mut().any(|binding| binding.pressed(inputs))
-    }
-
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        self.iter_mut().any(|binding| binding.just_pressed(inputs))
-    }
-
-    fn just_released(&mut self, inputs: &Inputs) -> bool {
-        self.iter_mut().any(|binding| binding.just_released(inputs))
     }
 
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
@@ -63,14 +35,6 @@ macro_rules! impl_tuple {
             impl<$([<T$t>]: TriggerBinding + Clone),*> TriggerBinding for ($([<T$t>]),*) {
                 fn pressed(&mut self, inputs: &Inputs) -> bool {
                     false $(|| self.$t.pressed(inputs))*
-                }
-
-                fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-                    false $(|| self.$t.just_pressed(inputs))*
-                }
-
-                fn just_released(&mut self, inputs: &Inputs) -> bool {
-                    false $(|| self.$t.just_released(inputs))*
                 }
 
                 fn clone_binding(&self) -> Box<dyn TriggerBinding> {

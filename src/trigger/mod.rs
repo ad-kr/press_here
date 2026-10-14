@@ -10,8 +10,6 @@ pub mod modifiers;
 
 pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     fn pressed(&mut self, inputs: &Inputs) -> bool;
-    fn just_pressed(&mut self, inputs: &Inputs) -> bool;
-    fn just_released(&mut self, inputs: &Inputs) -> bool;
 
     /// Clones the inner value and returns it as a boxed trait object.
     fn clone_binding(&self) -> Box<dyn TriggerBinding>;
@@ -75,8 +73,7 @@ dyn_clone::clone_trait_object!(TriggerBinding);
 pub struct Trigger<T> {
     trigger: PhantomData<T>,
     pub(crate) pressed: bool,
-    pub(crate) just_pressed: bool,
-    pub(crate) just_released: bool,
+    pub(crate) pressed_last_frame: bool,
     pub(crate) binding: Box<dyn TriggerBinding>,
 }
 
@@ -85,8 +82,7 @@ impl<T> Trigger<T> {
         Self {
             trigger: PhantomData,
             pressed: false,
-            just_pressed: false,
-            just_released: false,
+            pressed_last_frame: false,
             binding: Box::new(binding),
         }
     }
@@ -96,11 +92,11 @@ impl<T> Trigger<T> {
     }
 
     pub fn just_pressed(&self) -> bool {
-        self.just_pressed
+        self.pressed && !self.pressed_last_frame
     }
 
     pub fn just_released(&self) -> bool {
-        self.just_released
+        !self.pressed && self.pressed_last_frame
     }
 
     pub fn binding(&self) -> &dyn TriggerBinding {

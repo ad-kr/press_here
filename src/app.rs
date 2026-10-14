@@ -75,9 +75,8 @@ fn update_trigger<T: Send + Sync + 'static>(
         time: &raw_inputs.time,
     };
 
+    trigger.pressed_last_frame = trigger.pressed;
     trigger.pressed = trigger.binding.pressed(&inputs);
-    trigger.just_pressed = trigger.binding.just_pressed(&inputs);
-    trigger.just_released = trigger.binding.just_released(&inputs);
 }
 
 fn update_axis<A: Send + Sync + 'static>(
