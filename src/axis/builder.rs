@@ -35,7 +35,7 @@ pub trait AxisBindingBuilder: AxisBinding + Sized {
     }
 
     /// Clamps the axis binding to the given minimum and maximum values.
-    fn clamp(self, min: f32, max: f32) -> Clamp<Self> {
+    fn clamp_axis(self, min: f32, max: f32) -> Clamp<Self> {
         Clamp(self, min, max)
     }
 
@@ -50,22 +50,22 @@ pub trait AxisBindingBuilder: AxisBinding + Sized {
     }
 
     /// Returns a new axis binding that multiplies this axis value with another axis value.
-    fn mult<A: AxisBinding>(self, other: A) -> Multiply<Self, A> {
+    fn mul_axis<A: AxisBinding>(self, other: A) -> Multiply<Self, A> {
         Multiply(self, other)
     }
 
     /// Returns a new axis binding that divides this axis value by another axis value.
-    fn div<A: AxisBinding>(self, other: A) -> Divide<Self, A> {
+    fn div_axis<A: AxisBinding>(self, other: A) -> Divide<Self, A> {
         Divide(self, other)
     }
 
     /// Returns a new axis binding that adds another axis value to this axis value.
-    fn add<A: AxisBinding>(self, other: A) -> Add<Self, A> {
+    fn add_axis<A: AxisBinding>(self, other: A) -> Add<Self, A> {
         Add(self, other)
     }
 
     /// Return a new axis binding that subtracts another axis value from this axis value.
-    fn sub<A: AxisBinding>(self, other: A) -> Subtract<Self, A> {
+    fn sub_axis<A: AxisBinding>(self, other: A) -> Subtract<Self, A> {
         Subtract(self, other)
     }
 

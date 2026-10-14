@@ -28,7 +28,7 @@ fn main() {
     // equivalent TriggerBindingBuilder trait.
     let _super_complex_axis_binding_built_different = (
         Pair(KeyCode::KeyA, GamepadAxis::LeftStickX),
-        32.0.mult(GamepadAxis::LeftStickX),
+        32.0.mul_axis(GamepadAxis::LeftStickX),
     )
         .deadzone(0.1)
         .smooth(0.2)
