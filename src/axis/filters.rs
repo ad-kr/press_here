@@ -15,7 +15,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Deadzone<A> {
         }
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -55,7 +55,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Smooth<A> {
         Some(value)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -82,7 +82,7 @@ impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
         }
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -127,7 +127,7 @@ impl<A: AxisBinding + Clone> AxisBinding for RateLimit<A> {
         Some(value)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -150,7 +150,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Clamp<A> {
         Some(value.clamp(self.1, self.2))
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }

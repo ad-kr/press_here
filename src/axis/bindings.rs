@@ -10,7 +10,7 @@ impl AxisBinding for () {
         None
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(())
     }
 }
@@ -20,7 +20,7 @@ impl AxisBinding for f32 {
         Some(*self)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -30,7 +30,7 @@ impl AxisBinding for KeyCode {
         inputs.keycodes.pressed(*self).then_some(1.0)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -40,7 +40,7 @@ impl AxisBinding for MouseButton {
         inputs.mouse_buttons.pressed(*self).then_some(1.0)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -50,7 +50,7 @@ impl AxisBinding for GamepadButton {
         inputs.gamepads.iter().find_map(|pad| pad.get(*self))
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -69,7 +69,7 @@ impl AxisBinding for MouseX {
         Some(sum)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -88,7 +88,7 @@ impl AxisBinding for MouseY {
         Some(sum)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -123,7 +123,7 @@ impl AxisBinding for MouseWheel {
         Some(sum)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -138,7 +138,7 @@ impl AxisBinding for GamepadAxis {
         None
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(*self)
     }
 }
@@ -148,7 +148,7 @@ impl AxisBinding for Box<dyn AxisBinding> {
         self.as_mut().value(inputs)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         self.clone()
     }
 }

@@ -22,7 +22,7 @@ impl<T1: TriggerBinding + Clone, T2: TriggerBinding + Clone> TriggerBinding for 
         is_released && was_released
     }
 
-    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+    fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(self.clone())
     }
 }
@@ -40,12 +40,12 @@ impl<T: TriggerBinding + Clone> TriggerBinding for Vec<T> {
         self.iter_mut().any(|binding| binding.just_released(inputs))
     }
 
-    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+    fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(self.clone())
     }
 
-    fn all_triggers(&self) -> Vec<Box<dyn TriggerBinding>> {
-        self.iter().map(|b| b.clone_trigger()).collect()
+    fn all_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
+        self.iter().map(|b| b.clone_binding()).collect()
     }
 }
 
@@ -65,12 +65,12 @@ macro_rules! impl_tuple {
                     false $(|| self.$t.just_released(inputs))*
                 }
 
-                fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+                fn clone_binding(&self) -> Box<dyn TriggerBinding> {
                     Box::new(self.clone())
                 }
 
-                fn all_triggers(&self) -> Vec<Box<dyn TriggerBinding>> {
-                    vec![$(self.$t.clone_trigger()),*]
+                fn all_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
+                    vec![$(self.$t.clone_binding()),*]
                 }
             }
         }

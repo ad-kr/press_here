@@ -15,15 +15,16 @@ pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
     fn value(&mut self, inputs: &Inputs) -> Option<f32>;
 
     /// Clones the inner value and returns it as a boxed trait object.
-    fn clone_axis(&self) -> Box<dyn AxisBinding>;
+    fn clone_binding(&self) -> Box<dyn AxisBinding>;
 
     /// Clones the inner value and returns it as a boxed `Any` trait object.
     fn as_any(&self) -> Box<dyn Any> {
-        self.clone_axis() as Box<dyn Any>
+        self.clone_binding() as Box<dyn Any>
     }
 
-    /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding into its components and
-    /// return a vec of boxed bindings. Otherwise, returns a vector with a single binding.
+    /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding
+    /// into its components and return a vec of boxed bindings. Otherwise, returns a vector with a
+    /// single boxed binding.
     ///
     /// # Examples
     /// ```
@@ -31,7 +32,7 @@ pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
     /// use press_here::AxisBinding;
     ///
     /// let binding = (KeyCode::KeyA, GamepadAxis::LeftStickX);
-    /// let components = binding.all_axes();
+    /// let components = binding.inner_bindings();
     ///
     /// assert_eq!(components.len(), 2);
     /// assert_eq!(
@@ -43,8 +44,8 @@ pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
     ///     Some(&GamepadAxis::LeftStickX)
     /// );
     /// ```
-    fn all_axes(&self) -> Vec<Box<dyn AxisBinding>> {
-        vec![self.clone_axis()]
+    fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
+        vec![self.clone_binding()]
     }
 }
 

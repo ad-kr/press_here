@@ -17,7 +17,7 @@ impl<T: TriggerBinding + Clone> TriggerBinding for Not<T> {
         !self.0.just_released(inputs)
     }
 
-    fn clone_trigger(&self) -> Box<dyn TriggerBinding> {
+    fn clone_binding(&self) -> Box<dyn TriggerBinding> {
         Box::new(self.clone())
     }
 }

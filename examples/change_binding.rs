@@ -17,7 +17,7 @@ pub struct SomeAxis;
 fn change_axis_binding(trigger: Res<Trigger<ChangeBinding>>, mut axis: ResMut<Axis<SomeAxis>>) {
     if trigger.just_pressed() {
         let current = axis.binding();
-        let mut all = current.all_axes();
+        let mut all = current.inner_bindings();
 
         let first = &all[0];
 

@@ -21,7 +21,7 @@ impl<A1: AxisBinding + Clone, A2: AxisBinding + Clone> AxisBinding for Pair<A1, 
         Some(positive - negative)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -39,7 +39,7 @@ impl<A: AxisBinding + Clone, T: TriggerBinding + Clone> AxisBinding for WithTrig
         self.0.value(inputs)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -60,12 +60,12 @@ impl<A: AxisBinding + Clone> AxisBinding for Vec<A> {
         }
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 
-    fn all_axes(&self) -> Vec<Box<dyn AxisBinding>> {
-        self.iter().map(|b| b.clone_axis()).collect()
+    fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
+        self.iter().map(|b| b.clone_binding()).collect()
     }
 }
 
@@ -88,12 +88,12 @@ macro_rules! impl_tuple {
                     }
                 }
 
-                fn clone_axis(&self) -> Box<dyn AxisBinding> {
+                fn clone_binding(&self) -> Box<dyn AxisBinding> {
                     Box::new(self.clone())
                 }
 
-                fn all_axes(&self) -> Vec<Box<dyn AxisBinding>> {
-                    vec![$(self.$a.clone_axis()),*]
+                fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
+                    vec![$(self.$a.clone_binding()),*]
                 }
             }
         }

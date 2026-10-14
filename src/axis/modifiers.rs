@@ -14,7 +14,7 @@ impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> Axis
         self.1.sample(value)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -39,7 +39,7 @@ impl<A: AxisBinding + Clone, F: Fn(f32) -> f32 + Clone + Send + Sync + 'static> 
         Some((self.1)(value))
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -56,7 +56,7 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Multiply<A,
         Some(a * b)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -73,7 +73,7 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Divide<A, B
         Some(a / b)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -90,7 +90,7 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Add<A, B> {
         Some(a + b)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -107,7 +107,7 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Subtract<A,
         Some(a - b)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -123,7 +123,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Invert<A> {
         Some(-value)
     }
 
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }
@@ -163,7 +163,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Remap<A> {
 
         Some(value)
     }
-    fn clone_axis(&self) -> Box<dyn AxisBinding> {
+    fn clone_binding(&self) -> Box<dyn AxisBinding> {
         Box::new(self.clone())
     }
 }

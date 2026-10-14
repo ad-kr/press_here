@@ -14,15 +14,16 @@ pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     fn just_released(&mut self, inputs: &Inputs) -> bool;
 
     /// Clones the inner value and returns it as a boxed trait object.
-    fn clone_trigger(&self) -> Box<dyn TriggerBinding>;
+    fn clone_binding(&self) -> Box<dyn TriggerBinding>;
 
     /// Clones the inner value and returns it as a boxed `Any` trait object.
     fn as_any(&self) -> Box<dyn Any> {
-        self.clone_trigger() as Box<dyn Any>
+        self.clone_binding() as Box<dyn Any>
     }
 
-    /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding into its components and
-    /// return a vec of boxed bindings. Otherwise, returns a vector with a single binding.
+    /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding
+    /// into its components and return a vec of boxed bindings. Otherwise, returns a vector with a
+    /// single binding.
     ///
     /// # Examples
     /// ```
@@ -30,7 +31,7 @@ pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     /// use press_here::TriggerBinding;
     ///
     /// let binding = (KeyCode::KeyA, MouseButton::Right);
-    /// let components = binding.all_triggers();
+    /// let components = binding.all_bindings();
     ///
     /// assert_eq!(components.len(), 2);
     /// assert_eq!(
@@ -42,8 +43,8 @@ pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     ///     Some(&MouseButton::Right)
     /// );
     /// ```
-    fn all_triggers(&self) -> Vec<Box<dyn TriggerBinding>> {
-        vec![self.clone_trigger()]
+    fn all_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
+        vec![self.clone_binding()]
     }
 }
 
