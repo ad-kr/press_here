@@ -1,7 +1,7 @@
 use crate::{AxisBinding, inputs::Inputs};
 
 /// A filter that only allows axis values that exceed a certain deadzone threshold.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Deadzone<A: AxisBinding>(pub A, pub f32);
 
 impl<A: AxisBinding + Clone> AxisBinding for Deadzone<A> {
@@ -14,10 +14,6 @@ impl<A: AxisBinding + Clone> AxisBinding for Deadzone<A> {
             Some(value)
         }
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A filter that smooths axis values using
@@ -25,7 +21,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Deadzone<A> {
 ///
 /// `tau` is the time constant that controls the amount of smoothing. Small `tau` values result in less smoothing (more
 /// responsive), while large `tau` values result in more smoothing (less responsive).
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Smooth<A: AxisBinding> {
     pub binding: A,
     pub tau: f32,
@@ -54,17 +50,13 @@ impl<A: AxisBinding + Clone> AxisBinding for Smooth<A> {
 
         Some(value)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A filter that normalizes the axis value so that the combined magnitude of the two axes is at most 1.0.
 ///
 /// The first supplied axis is the one being normalized, and the second is the perpendicular axis used to calculate the
 /// magnitude.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Normalize<A: AxisBinding, Perpendicular: AxisBinding>(pub A, pub Perpendicular);
 
 impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
@@ -81,10 +73,6 @@ impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
             Some(x)
         }
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// Limits the rate of change of an axis value to a maximum delta per second.
@@ -96,7 +84,7 @@ impl<A: AxisBinding + Clone, Perpendicular: AxisBinding + Clone> AxisBinding
 /// let maximum_rate = 0.5; // units per second
 /// let limited_axis = RateLimit::new(binding, maximum_rate);
 /// ```
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct RateLimit<A: AxisBinding> {
     pub binding: A,
     pub max_rate: f32,
@@ -126,10 +114,6 @@ impl<A: AxisBinding + Clone> AxisBinding for RateLimit<A> {
 
         Some(value)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// Clamps the binding value to a specified range.
@@ -140,7 +124,7 @@ impl<A: AxisBinding + Clone> AxisBinding for RateLimit<A> {
 /// # let binding = 1.0;
 /// let clamped = Clamp(binding, -0.5, 0.5);
 /// ```
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Clamp<A: AxisBinding>(pub A, pub f32, pub f32);
 
 impl<A: AxisBinding + Clone> AxisBinding for Clamp<A> {
@@ -148,9 +132,5 @@ impl<A: AxisBinding + Clone> AxisBinding for Clamp<A> {
         let value = self.0.value(inputs)?;
 
         Some(value.clamp(self.1, self.2))
-    }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
     }
 }

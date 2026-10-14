@@ -3,7 +3,7 @@ use pastey::paste;
 
 /// A pair of axis binding, where the first axis is used for the negative direction and the second axis is used for the
 /// positive direction.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Pair<A1: AxisBinding, A2: AxisBinding>(pub A1, pub A2);
 
 impl<A1: AxisBinding + Clone, A2: AxisBinding + Clone> AxisBinding for Pair<A1, A2> {
@@ -20,14 +20,10 @@ impl<A1: AxisBinding + Clone, A2: AxisBinding + Clone> AxisBinding for Pair<A1, 
 
         Some(positive - negative)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// An axis binding that is only active when the given trigger binding is active.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct WithTriggerBinding<A: AxisBinding, T: TriggerBinding>(pub A, pub T);
 
 impl<A: AxisBinding + Clone, T: TriggerBinding + Clone> AxisBinding for WithTriggerBinding<A, T> {
@@ -37,10 +33,6 @@ impl<A: AxisBinding + Clone, T: TriggerBinding + Clone> AxisBinding for WithTrig
         }
 
         self.0.value(inputs)
-    }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
     }
 }
 
@@ -60,12 +52,10 @@ impl<A: AxisBinding + Clone> AxisBinding for Vec<A> {
         }
     }
 
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
-
     fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
-        self.iter().map(|b| b.clone_binding()).collect()
+        self.iter()
+            .map(|b| dyn_clone::clone_box(b.as_dyn()))
+            .collect()
     }
 }
 
@@ -88,12 +78,8 @@ macro_rules! impl_tuple {
                     }
                 }
 
-                fn clone_binding(&self) -> Box<dyn AxisBinding> {
-                    Box::new(self.clone())
-                }
-
                 fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
-                    vec![$(self.$a.clone_binding()),*]
+                    vec![$(dyn_clone::clone_box(self.$a.as_dyn())),*]
                 }
             }
         }

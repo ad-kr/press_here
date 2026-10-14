@@ -1,11 +1,14 @@
 use bevy::prelude::*;
-use press_here::{AppExt, Axis, AxisBinding, Pair, Trigger};
+use press_here::{AppExt, Axis, AxisBinding, AxisBindingBuilder, Pair, Trigger};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_trigger::<ChangeBinding>(KeyCode::Space)
-        .add_axis::<SomeAxis>((Pair(KeyCode::KeyA, KeyCode::KeyD), GamepadAxis::LeftStickX))
+        .add_axis::<SomeAxis>((
+            Pair(KeyCode::KeyA, KeyCode::KeyD),
+            GamepadAxis::LeftStickX.deadzone(0.1),
+        ))
         .add_systems(Update, change_axis_binding)
         .add_systems(Update, print_axis)
         .run();
@@ -34,5 +37,7 @@ fn change_axis_binding(trigger: Res<Trigger<ChangeBinding>>, mut axis: ResMut<Ax
 }
 
 fn print_axis(axis: Res<Axis<SomeAxis>>) {
-    println!("Axis value: {}", axis.value());
+    if axis.value().abs() > 0.0 {
+        println!("Axis value: {}", axis.value());
+    }
 }

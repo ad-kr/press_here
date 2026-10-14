@@ -1,21 +1,18 @@
 use crate::{AxisBinding, inputs::Inputs};
 use bevy::math::Curve;
+use std::fmt::Debug;
 
 /// A modifier that applies a curve to the axis value. This is useful for creating non-linear input responses.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct WithCurve<A: AxisBinding, C: Curve<f32>>(pub A, pub C);
 
-impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> AxisBinding
+impl<A: AxisBinding + Clone, C: Curve<f32> + Debug + Clone + Send + Sync + 'static> AxisBinding
     for WithCurve<A, C>
 {
     fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         let value = self.0.value(inputs)?;
 
         self.1.sample(value)
-    }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
     }
 }
 
@@ -30,6 +27,15 @@ impl<A: AxisBinding + Clone, C: Curve<f32> + Clone + Send + Sync + 'static> Axis
 #[derive(Clone, Copy)]
 pub struct Transformation<A: AxisBinding, F: Fn(f32) -> f32>(pub A, pub F);
 
+impl<A: AxisBinding + Debug, F: Fn(f32) -> f32> Debug for Transformation<A, F> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Transformation")
+            .field(&self.0)
+            .field(&format_args!("<fn>"))
+            .finish()
+    }
+}
+
 impl<A: AxisBinding + Clone, F: Fn(f32) -> f32 + Clone + Send + Sync + 'static> AxisBinding
     for Transformation<A, F>
 {
@@ -38,14 +44,10 @@ impl<A: AxisBinding + Clone, F: Fn(f32) -> f32 + Clone + Send + Sync + 'static> 
 
         Some((self.1)(value))
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A modifier that multiplies two axis values together.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Multiply<A: AxisBinding, B: AxisBinding>(pub A, pub B);
 
 impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Multiply<A, B> {
@@ -55,14 +57,10 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Multiply<A,
 
         Some(a * b)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A modifier that divides two axis values.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Divide<A: AxisBinding, B: AxisBinding>(pub A, pub B);
 
 impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Divide<A, B> {
@@ -72,14 +70,10 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Divide<A, B
 
         Some(a / b)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A modifier that adds two axis values together.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Add<A: AxisBinding, B: AxisBinding>(pub A, pub B);
 
 impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Add<A, B> {
@@ -89,14 +83,10 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Add<A, B> {
 
         Some(a + b)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A modifier that subtracts two axis values.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Subtract<A: AxisBinding, B: AxisBinding>(pub A, pub B);
 
 impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Subtract<A, B> {
@@ -106,14 +96,10 @@ impl<A: AxisBinding + Clone, B: AxisBinding + Clone> AxisBinding for Subtract<A,
 
         Some(a - b)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
-    }
 }
 
 /// A modifier that inverts the axis value.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Invert<A: AxisBinding>(pub A);
 
 impl<A: AxisBinding + Clone> AxisBinding for Invert<A> {
@@ -121,10 +107,6 @@ impl<A: AxisBinding + Clone> AxisBinding for Invert<A> {
         let value = self.0.value(inputs)?;
 
         Some(-value)
-    }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
     }
 }
 
@@ -150,7 +132,7 @@ impl<A: AxisBinding + Clone> AxisBinding for Invert<A> {
 ///     .remap(0.2, 1.0, 0.0, 1.0);
 /// ```
 ///
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Remap<A: AxisBinding>(pub A, pub f32, pub f32, pub f32, pub f32);
 
 impl<A: AxisBinding + Clone> AxisBinding for Remap<A> {
@@ -162,8 +144,5 @@ impl<A: AxisBinding + Clone> AxisBinding for Remap<A> {
         let value = out_min + t * (out_max - out_min);
 
         Some(value)
-    }
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(self.clone())
     }
 }

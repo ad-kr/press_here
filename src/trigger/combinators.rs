@@ -2,16 +2,12 @@ use crate::{inputs::Inputs, trigger::TriggerBinding};
 use pastey::paste;
 
 /// A combinator that returns true only if both trigger bindings are pressed.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct And<T1: TriggerBinding, T2: TriggerBinding>(pub T1, pub T2);
 
 impl<T1: TriggerBinding + Clone, T2: TriggerBinding + Clone> TriggerBinding for And<T1, T2> {
     fn pressed(&mut self, inputs: &Inputs) -> bool {
         self.0.pressed(inputs) && self.1.pressed(inputs)
-    }
-
-    fn clone_binding(&self) -> Box<dyn TriggerBinding> {
-        Box::new(self.clone())
     }
 }
 
@@ -20,12 +16,10 @@ impl<T: TriggerBinding + Clone> TriggerBinding for Vec<T> {
         self.iter_mut().any(|binding| binding.pressed(inputs))
     }
 
-    fn clone_binding(&self) -> Box<dyn TriggerBinding> {
-        Box::new(self.clone())
-    }
-
-    fn all_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
-        self.iter().map(|b| b.clone_binding()).collect()
+    fn inner_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
+        self.iter()
+            .map(|b| dyn_clone::clone_box(b.as_dyn()))
+            .collect()
     }
 }
 
@@ -37,12 +31,9 @@ macro_rules! impl_tuple {
                     false $(|| self.$t.pressed(inputs))*
                 }
 
-                fn clone_binding(&self) -> Box<dyn TriggerBinding> {
-                    Box::new(self.clone())
-                }
 
-                fn all_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
-                    vec![$(self.$t.clone_binding()),*]
+                fn inner_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
+                    vec![$(dyn_clone::clone_box(self.$t.as_dyn())),*]
                 }
             }
         }

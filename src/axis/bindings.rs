@@ -4,14 +4,11 @@ use bevy::input::{
     keyboard::KeyCode,
     mouse::{MouseButton, MouseScrollUnit},
 };
+use std::any::Any;
 
 impl AxisBinding for () {
     fn value(&mut self, _: &Inputs) -> Option<f32> {
         None
-    }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(())
     }
 }
 
@@ -19,19 +16,11 @@ impl AxisBinding for f32 {
     fn value(&mut self, _: &Inputs) -> Option<f32> {
         Some(*self)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 impl AxisBinding for KeyCode {
     fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         inputs.keycodes.pressed(*self).then_some(1.0)
-    }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
     }
 }
 
@@ -39,24 +28,16 @@ impl AxisBinding for MouseButton {
     fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         inputs.mouse_buttons.pressed(*self).then_some(1.0)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 impl AxisBinding for GamepadButton {
     fn value(&mut self, inputs: &Inputs) -> Option<f32> {
         inputs.gamepads.iter().find_map(|pad| pad.get(*self))
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 /// Binds the X-axis of mouse movement as an axis input.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct MouseX;
 
 impl AxisBinding for MouseX {
@@ -68,14 +49,10 @@ impl AxisBinding for MouseX {
         let sum = inputs.mouse_motion.iter().map(|m| m.delta.x).sum();
         Some(sum)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 /// Binds the Y-axis of mouse movement as an axis input.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct MouseY;
 
 impl AxisBinding for MouseY {
@@ -87,14 +64,10 @@ impl AxisBinding for MouseY {
         let sum = inputs.mouse_motion.iter().map(|m| m.delta.y).sum();
         Some(sum)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 /// Binds mouse wheel movement as an axis input.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct MouseWheel {
     pub px_per_line: f32,
 }
@@ -122,10 +95,6 @@ impl AxisBinding for MouseWheel {
 
         Some(sum)
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 impl AxisBinding for GamepadAxis {
@@ -137,10 +106,6 @@ impl AxisBinding for GamepadAxis {
         }
         None
     }
-
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        Box::new(*self)
-    }
 }
 
 impl AxisBinding for Box<dyn AxisBinding> {
@@ -148,7 +113,13 @@ impl AxisBinding for Box<dyn AxisBinding> {
         self.as_mut().value(inputs)
     }
 
-    fn clone_binding(&self) -> Box<dyn AxisBinding> {
-        self.clone()
+    fn as_any(&self) -> &dyn Any {
+        // We forward the inner AxisBinding's as_any method, to not expose the Box itself.
+        (**self).as_any()
+    }
+
+    fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
+        // We forward the inner AxisBinding's inner_bindings method, to not expose the Box itself.
+        (**self).inner_bindings()
     }
 }

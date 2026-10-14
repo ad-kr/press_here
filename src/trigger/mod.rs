@@ -1,22 +1,23 @@
 use crate::inputs::Inputs;
 use bevy::ecs::resource::Resource;
 use dyn_clone::DynClone;
-use std::{any::Any, marker::PhantomData};
+use std::{any::Any, fmt::Debug, marker::PhantomData};
 
 mod bindings;
 pub mod builder;
 pub mod combinators;
 pub mod modifiers;
 
-pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
+dyn_clone::clone_trait_object!(TriggerBinding);
+
+pub trait TriggerBinding:
+    AsDynTriggerBinding + DynClone + Debug + Any + Send + Sync + 'static
+{
     fn pressed(&mut self, inputs: &Inputs) -> bool;
 
-    /// Clones the inner value and returns it as a boxed trait object.
-    fn clone_binding(&self) -> Box<dyn TriggerBinding>;
-
     /// Clones the inner value and returns it as a boxed `Any` trait object.
-    fn as_any(&self) -> Box<dyn Any> {
-        self.clone_binding() as Box<dyn Any>
+    fn as_any(&self) -> &dyn Any {
+        self.as_dyn()
     }
 
     /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding
@@ -29,7 +30,7 @@ pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     /// use press_here::TriggerBinding;
     ///
     /// let binding = (KeyCode::KeyA, MouseButton::Right);
-    /// let components = binding.all_bindings();
+    /// let components = binding.inner_bindings();
     ///
     /// assert_eq!(components.len(), 2);
     /// assert_eq!(
@@ -41,12 +42,20 @@ pub trait TriggerBinding: DynClone + Any + Send + Sync + 'static {
     ///     Some(&MouseButton::Right)
     /// );
     /// ```
-    fn all_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
-        vec![self.clone_binding()]
+    fn inner_bindings(&self) -> Vec<Box<dyn TriggerBinding>> {
+        vec![dyn_clone::clone_box(self.as_dyn())]
     }
 }
 
-dyn_clone::clone_trait_object!(TriggerBinding);
+pub trait AsDynTriggerBinding {
+    fn as_dyn(&self) -> &dyn TriggerBinding;
+}
+
+impl<T: TriggerBinding + 'static> AsDynTriggerBinding for T {
+    fn as_dyn(&self) -> &dyn TriggerBinding {
+        self
+    }
+}
 
 /// A resource that holds the current state and binding for a trigger.
 ///

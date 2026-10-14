@@ -1,7 +1,7 @@
 use crate::inputs::Inputs;
 use bevy::ecs::resource::Resource;
 use dyn_clone::DynClone;
-use std::{any::Any, marker::PhantomData};
+use std::{any::Any, fmt::Debug, marker::PhantomData};
 
 pub mod bindings;
 pub mod builder;
@@ -11,15 +11,12 @@ pub mod modifiers;
 
 dyn_clone::clone_trait_object!(AxisBinding);
 
-pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
+pub trait AxisBinding: AsDynAxisBinding + DynClone + Debug + Any + Send + Sync + 'static {
     fn value(&mut self, inputs: &Inputs) -> Option<f32>;
 
-    /// Clones the inner value and returns it as a boxed trait object.
-    fn clone_binding(&self) -> Box<dyn AxisBinding>;
-
-    /// Clones the inner value and returns it as a boxed `Any` trait object.
-    fn as_any(&self) -> Box<dyn Any> {
-        self.clone_binding() as Box<dyn Any>
+    /// Returns the inner value as the `Any` trait object.
+    fn as_any(&self) -> &dyn Any {
+        self.as_dyn()
     }
 
     /// If the binding is a "collection binding" (tuple, vec, etc.), this will split the binding
@@ -45,7 +42,17 @@ pub trait AxisBinding: DynClone + Any + Send + Sync + 'static {
     /// );
     /// ```
     fn inner_bindings(&self) -> Vec<Box<dyn AxisBinding>> {
-        vec![self.clone_binding()]
+        vec![dyn_clone::clone_box(self.as_dyn())]
+    }
+}
+
+pub trait AsDynAxisBinding {
+    fn as_dyn(&self) -> &dyn AxisBinding;
+}
+
+impl<T: AxisBinding> AsDynAxisBinding for T {
+    fn as_dyn(&self) -> &dyn AxisBinding {
+        self
     }
 }
 
