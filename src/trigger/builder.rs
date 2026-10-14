@@ -11,3 +11,5 @@ pub trait TriggerBindingBuilder: TriggerBinding + Sized {
         Not(self)
     }
 }
+
+impl<T: TriggerBinding> TriggerBindingBuilder for T {}
