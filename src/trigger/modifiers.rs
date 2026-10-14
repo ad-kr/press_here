@@ -10,11 +10,11 @@ impl<T: TriggerBinding + Clone> TriggerBinding for Not<T> {
     }
 
     fn just_pressed(&mut self, inputs: &Inputs) -> bool {
-        !self.0.just_pressed(inputs)
+        self.0.just_released(inputs)
     }
 
     fn just_released(&mut self, inputs: &Inputs) -> bool {
-        !self.0.just_released(inputs)
+        self.0.just_pressed(inputs)
     }
 
     fn clone_binding(&self) -> Box<dyn TriggerBinding> {
