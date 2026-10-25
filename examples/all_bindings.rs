@@ -49,14 +49,15 @@ fn main() {
         .add_axis::<MouseButtonAxis>(MouseButton::Left) // Binding that returns 1.0 when the specified mouse button is pressed.
         .add_axis::<GamepadButtonAxis>(GamepadButton::South) // Binding that returns the value of the specified gamepad button.
         .add_axis::<GamepadAxisAxis>(GamepadAxis::LeftStickX) // Binding that returns the value of the specified gamepad axis.
-        .add_axis::<MouseMovementAxis>(MouseY) // Binding that returns the mouse movement delta. Also works for MouseX.
+        .add_axis::<MouseDeltaAxis>(MouseY::Delta) // Binding that returns the mouse movement delta. Also works for MouseX.
+        .add_axis::<MousePositionAxis>(MouseY::Position) // Binding that returns the mouse position relative to the window center. Also works for MouseX.
         .add_axis::<MouseWheelAxis>(MouseWheel::default()) // Binding that returns the mouse wheel scroll delta.
         .add_axis::<BoxedAxis>(Box::new(KeyCode::KeyW) as Box<dyn AxisBinding>) // Box<dyn AxisBinding> also implements the AxisBinding trait.
         // Axis combinators
         .add_axis::<TupleAxis>((KeyCode::KeyW, GamepadAxis::LeftStickX)) // Tuple of AxisBindings. All active bindings are averaged.
         .add_axis::<VecAxis>(vec![KeyCode::KeyW, KeyCode::ArrowUp]) // Vec of AxisBindings. All active bindings are averaged.
         .add_axis::<PairAxis>(Pair(KeyCode::KeyS, KeyCode::KeyW)) // Pair combinator that uses the first binding for negative direction and the second for positive.
-        .add_axis::<WithTriggerAxis>(WithTriggerBinding(MouseY, MouseButton::Left)) // Axis that is only active when the trigger binding is active.
+        .add_axis::<WithTriggerAxis>(WithTriggerBinding(MouseY::Delta, MouseButton::Left)) // Axis that is only active when the trigger binding is active.
         // Axis filters
         .add_axis::<DeadzoneAxis>(Deadzone(GamepadAxis::LeftStickX, 0.2)) // Deadzone filter that ignores small input values.
         .add_axis::<SmoothAxis>(Smooth::new(GamepadAxis::LeftStickX, 0.1)) // Smooth filter that smooths input values over time.
@@ -109,7 +110,8 @@ struct KeyCodeAxis;
 struct MouseButtonAxis;
 struct GamepadButtonAxis;
 struct GamepadAxisAxis;
-struct MouseMovementAxis;
+struct MouseDeltaAxis;
+struct MousePositionAxis;
 struct MouseWheelAxis;
 struct BoxedAxis;
 
@@ -154,7 +156,8 @@ fn visualize_basic(
     mut mouse_button: AxisVisualizer<MouseButtonAxis>,
     mut gamepad_button: AxisVisualizer<GamepadButtonAxis>,
     mut gamepad_axis: AxisVisualizer<GamepadAxisAxis>,
-    mut mouse_movement: AxisVisualizer<MouseMovementAxis>,
+    mut mouse_delta: AxisVisualizer<MouseDeltaAxis>,
+    mut mouse_position: AxisVisualizer<MousePositionAxis>,
     mut mouse_wheel: AxisVisualizer<MouseWheelAxis>,
     mut boxed: AxisVisualizer<BoxedAxis>,
 ) {
@@ -164,9 +167,10 @@ fn visualize_basic(
     graph(&mut mouse_button, 3, 0, SCALE);
     graph(&mut gamepad_button, 4, 0, SCALE);
     graph(&mut gamepad_axis, 5, 0, SCALE);
-    graph(&mut mouse_movement, 6, 0, 1.0);
-    graph(&mut mouse_wheel, 7, 0, 1.0);
-    graph(&mut boxed, 8, 0, SCALE);
+    graph(&mut mouse_delta, 6, 0, 1.0);
+    graph(&mut mouse_position, 7, 0, 0.05);
+    graph(&mut mouse_wheel, 8, 0, 1.0);
+    graph(&mut boxed, 9, 0, SCALE);
 }
 
 fn visualize_combinators(
