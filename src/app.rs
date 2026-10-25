@@ -82,9 +82,14 @@ fn update_trigger<T: Send + Sync + 'static>(
     let gamepads = raw_inputs.gamepads.iter().collect::<Vec<_>>();
     let mouse_motion = raw_inputs.mouse_motion.read().collect::<Vec<_>>();
     let mouse_wheel = raw_inputs.mouse_wheel.read().collect::<Vec<_>>();
+    let mouse_position = raw_inputs.window.and_then(|w| {
+        w.physical_cursor_position()
+            .map(|p| p - w.physical_size().as_vec2() * 0.5)
+    });
 
     let inputs = Inputs {
         keycodes: &raw_inputs.keycodes,
+        mouse_position,
         mouse_buttons: &raw_inputs.mouse_buttons,
         mouse_motion: mouse_motion.as_slice(),
         mouse_wheel: mouse_wheel.as_slice(),
@@ -103,9 +108,14 @@ fn update_axis<A: Send + Sync + 'static>(
     let gamepads = raw_inputs.gamepads.iter().collect::<Vec<_>>();
     let mouse_motion = raw_inputs.mouse_motion.read().collect::<Vec<_>>();
     let mouse_wheel = raw_inputs.mouse_wheel.read().collect::<Vec<_>>();
+    let mouse_position = raw_inputs.window.and_then(|w| {
+        w.physical_cursor_position()
+            .map(|p| p - w.physical_size().as_vec2() * 0.5)
+    });
 
     let inputs = Inputs {
         keycodes: &raw_inputs.keycodes,
+        mouse_position,
         mouse_buttons: &raw_inputs.mouse_buttons,
         mouse_motion: mouse_motion.as_slice(),
         mouse_wheel: mouse_wheel.as_slice(),
